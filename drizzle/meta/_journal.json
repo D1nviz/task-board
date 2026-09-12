@@ -36,6 +36,20 @@
       "when": 1789216147742,
       "tag": "0004_supreme_scarlet_spider",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789222510068,
+      "tag": "0005_light_moondragon",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789223309024,
+      "tag": "0006_robust_enchantress",
+      "breakpoints": true
     }
   ]
 }

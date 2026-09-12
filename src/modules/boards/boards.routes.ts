@@ -2,7 +2,11 @@ import {
   type FastifyPluginAsyncTypebox,
   Type,
 } from "@fastify/type-provider-typebox";
-import { BoardCreateBodySchema, BoardResponseSchema } from "./boards.schema.js";
+import {
+  BoardCreateBodySchema,
+  BoardIdParamsSchema,
+  BoardResponseSchema,
+} from "./boards.schema.js";
 
 const boardsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
   const { boardsController } = fastify;
@@ -21,6 +25,13 @@ const boardsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       body: BoardCreateBodySchema,
     },
     handler: boardsController.create,
+  });
+
+  fastify.delete("/:id", {
+    schema: {
+      params: BoardIdParamsSchema,
+    },
+    handler: boardsController.delete,
   });
 };
 

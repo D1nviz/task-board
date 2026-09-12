@@ -3,6 +3,8 @@ import {
   TaskByBoardIdSchema,
   TaskByColumnIdSchema,
   TaskCreateBodySchema,
+  TaskIdParamsSchema,
+  TaskLabelParamsSchema,
 } from "./tasks.schema.js";
 
 const tasksRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -27,6 +29,27 @@ const tasksRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       body: TaskCreateBodySchema,
     },
     handler: tasksController.create,
+  });
+
+  fastify.delete("/:id", {
+    schema: {
+      params: TaskIdParamsSchema,
+    },
+    handler: tasksController.delete,
+  });
+
+  fastify.put("/:taskId/labels/:labelId", {
+    schema: {
+      params: TaskLabelParamsSchema,
+    },
+    handler: tasksController.attachLabel,
+  });
+
+  fastify.delete("/:taskId/labels/:labelId", {
+    schema: {
+      params: TaskLabelParamsSchema,
+    },
+    handler: tasksController.detachLabel,
   });
 };
 

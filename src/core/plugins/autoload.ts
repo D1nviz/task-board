@@ -5,7 +5,7 @@ import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 const autoloadPlugin: FastifyPluginAsyncTypebox = async (fastify) => {
   await fastify.register(AutoLoad, {
     dir: join(import.meta.dirname, "../../modules"),
-    matchFilter: (path) => path.endsWith(".module.ts"),
+    matchFilter: (path) => /\.module\.(ts|js)$/.test(path),
   });
 };
 

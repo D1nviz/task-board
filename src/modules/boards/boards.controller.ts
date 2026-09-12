@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { BoardCreateBody } from "./boards.schema.js";
+import type { BoardCreateBody, BoardIdParams } from "./boards.schema.js";
 import type { BoardsService } from "./boards.sevice.js";
 
 export class BoardsController {
@@ -16,5 +16,13 @@ export class BoardsController {
 
   getAll = async (_req: FastifyRequest, reply: FastifyReply) => {
     return reply.send(await this.service.getAll());
+  };
+
+  delete = async (
+    req: FastifyRequest<{ Params: BoardIdParams }>,
+    reply: FastifyReply,
+  ) => {
+    await this.service.delete(req.params);
+    return reply.code(204).send();
   };
 }

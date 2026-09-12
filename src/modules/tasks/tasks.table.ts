@@ -9,8 +9,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { buildTimestamps } from "../../core/db/helpers/timestamp.js";
 import { boardColumns, boards } from "../boards/boards.table.js";
+import { taskLabels } from "../labels/labels.table.js";
 
-export const priorityEnum = pgEnum("priority", ["low", "medium", "hight"]);
+export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
@@ -31,25 +32,6 @@ export const tasks = pgTable("tasks", {
   ...buildTimestamps(),
 });
 
-export const labels = pgTable("labels", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  ...buildTimestamps(),
-});
-
-export const taskLabels = pgTable("task_labels", {
-  taskId: integer("task_id")
-    .references(() => tasks.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  labelId: integer("label_id")
-    .references(() => labels.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-});
-
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
   board: one(boards, {
     fields: [tasks.boardId],
@@ -60,19 +42,4 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
     references: [boardColumns.id],
   }),
   taskLabels: many(taskLabels),
-}));
-
-export const labelsRelations = relations(labels, ({ many }) => ({
-  taskLabels: many(taskLabels),
-}));
-
-export const taskLabelsRelations = relations(taskLabels, ({ one }) => ({
-  task: one(tasks, {
-    fields: [taskLabels.taskId],
-    references: [tasks.id],
-  }),
-  label: one(labels, {
-    fields: [taskLabels.labelId],
-    references: [labels.id],
-  }),
 }));

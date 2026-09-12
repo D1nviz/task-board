@@ -4,7 +4,7 @@ import { TasksRepository } from "./tasks.repository.js";
 import tasksRoutes from "./tasks.routes.js";
 import { TasksService } from "./tasks.service.js";
 
-const boardsModule: FastifyPluginAsyncTypebox = async (fastify) => {
+const tasksModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const repository = new TasksRepository(fastify.db);
   const service = new TasksService(repository);
   const controller = new TasksController(service);
@@ -13,4 +13,4 @@ const boardsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   await fastify.register(tasksRoutes);
 };
 
-export default boardsModule;
+export default tasksModule;

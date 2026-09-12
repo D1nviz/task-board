@@ -3,6 +3,8 @@ import type {
   TaskByBoardIdParams,
   TaskByColumnIdParams,
   TaskCreateBodyParams,
+  TaskIdParams,
+  TaskLabelParams,
 } from "./tasks.schema.js";
 import type { TasksService } from "./tasks.service.js";
 
@@ -14,8 +16,7 @@ export class TasksController {
     reply: FastifyReply,
   ) => {
     const { boardId } = req.params;
-    const res = await this.service.getAllByBoardId({ boardId });
-    reply.send(res);
+    return reply.send(await this.service.getAllByBoardId({ boardId }));
   };
 
   getAllByColumnId = async (
@@ -23,14 +24,38 @@ export class TasksController {
     reply: FastifyReply,
   ) => {
     const { columnId } = req.params;
-    const res = await this.service.getAllByColumnId({ columnId });
-    reply.send(res);
+    return reply.send(await this.service.getAllByColumnId({ columnId }));
   };
+
   create = async (
     req: FastifyRequest<{ Body: TaskCreateBodyParams }>,
     reply: FastifyReply,
   ) => {
-    const res = await this.service.create(req.body);
-    reply.send(res);
+    const [task] = await this.service.create(req.body);
+    return reply.code(201).send(task);
+  };
+
+  delete = async (
+    req: FastifyRequest<{ Params: TaskIdParams }>,
+    reply: FastifyReply,
+  ) => {
+    await this.service.delete(req.params);
+    return reply.code(204).send();
+  };
+
+  attachLabel = async (
+    req: FastifyRequest<{ Params: TaskLabelParams }>,
+    reply: FastifyReply,
+  ) => {
+    await this.service.attachLabel(req.params);
+    return reply.code(204).send();
+  };
+
+  detachLabel = async (
+    req: FastifyRequest<{ Params: TaskLabelParams }>,
+    reply: FastifyReply,
+  ) => {
+    await this.service.detachLabel(req.params);
+    return reply.code(204).send();
   };
 }

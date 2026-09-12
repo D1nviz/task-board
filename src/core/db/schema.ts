@@ -7,9 +7,11 @@ export {
 export {
   labels,
   labelsRelations,
-  priorityEnum,
   taskLabels,
   taskLabelsRelations,
+} from "../../modules/labels/labels.table.js";
+export {
+  priorityEnum,
   tasks,
   tasksRelations,
 } from "../../modules/tasks/tasks.table.js";
