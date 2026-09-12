@@ -22,13 +22,10 @@ export const tasks = pgTable("tasks", {
       onDelete: "cascade",
     })
     .notNull(),
-  boardColumnsId: integer("board_columns_id").references(
-    () => boardColumns.id,
-    {
-      onDelete: "set null",
-    },
-  ),
-  priority: priorityEnum().default("medium"),
+  boardColumnId: integer("board_column_id").references(() => boardColumns.id, {
+    onDelete: "set null",
+  }),
+  priority: priorityEnum("priority").notNull().default("medium"),
   ...buildTimestamps(),
 });
 
@@ -38,7 +35,7 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
     references: [boards.id],
   }),
   boardColumn: one(boardColumns, {
-    fields: [tasks.boardColumnsId],
+    fields: [tasks.boardColumnId],
     references: [boardColumns.id],
   }),
   taskLabels: many(taskLabels),

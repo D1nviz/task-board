@@ -21,7 +21,7 @@ export const TaskCreateBodySchema = Type.Object({
   title: Type.String({ minLength: 1, maxLength: 256 }),
   description: Type.Optional(Type.String({ maxLength: 5000 })),
   boardId: Type.Integer({ minimum: 1 }),
-  boardColumnsId: Type.Optional(Type.Integer({ minimum: 1 })),
+  boardColumnId: Type.Optional(Type.Integer({ minimum: 1 })),
 });
 
 export type TaskByBoardIdParams = Type.Static<typeof TaskByBoardIdSchema>;

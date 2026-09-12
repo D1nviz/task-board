@@ -5,7 +5,7 @@ import { tasks } from "../tasks/tasks.table.js";
 
 export const boards = pgTable("boards", {
   id: serial("id").primaryKey(),
-  title: varchar("title", { length: 256 }).notNull().unique(),
+  title: varchar("title", { length: 256 }).notNull(),
   ...buildTimestamps(),
 });
 
@@ -17,11 +17,11 @@ export const boardColumns = pgTable("board_columns", {
       onDelete: "cascade",
     })
     .notNull(),
-  order: integer().notNull(),
+  sortOrder: integer("sort_order").notNull(),
   ...buildTimestamps(),
 });
 
-export const boardRelations = relations(boards, ({ many }) => ({
+export const boardsRelations = relations(boards, ({ many }) => ({
   boardColumns: many(boardColumns),
   tasks: many(tasks),
 }));

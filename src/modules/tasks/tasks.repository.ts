@@ -27,7 +27,7 @@ export class TasksRepository {
 
   getAllByColumnId = ({ columnId }: TaskByColumnIdParams) => {
     return this.db.query.tasks.findMany({
-      where: eq(tasks.boardColumnsId, columnId),
+      where: eq(tasks.boardColumnId, columnId),
       with: {
         taskLabels: true,
         boardColumn: true,

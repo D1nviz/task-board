@@ -1,8 +1,12 @@
 export {
+  credentials,
+  credentialsRelations,
+} from "../../modules/auth/auth.table.js";
+export {
   boardColumns,
   boardColumnsRelations,
-  boardRelations,
   boards,
+  boardsRelations,
 } from "../../modules/boards/boards.table.js";
 export {
   labels,
@@ -15,3 +19,8 @@ export {
   tasks,
   tasksRelations,
 } from "../../modules/tasks/tasks.table.js";
+export {
+  rolesEnum,
+  users,
+  usersRelations,
+} from "../../modules/users/users.table.js";
