@@ -1,26 +1,20 @@
-import {
-  integer,
-  pgTable,
-  serial,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
-import { boards } from "../boards/boards.table.js";
+import { Type } from "typebox";
 
-const timestamps = {
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-};
-
-export const tasks = pgTable("tasks", {
-  id: serial("id").primaryKey(),
-  title: varchar("title", { length: 256 }).notNull(),
-  boardId: integer("board_id")
-    .references(() => boards.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  ...timestamps,
+export const TaskByBoardIdSchema = Type.Object({
+  boardId: Type.Integer({ minimum: 1 }),
 });
+
+export const TaskByColumnIdSchema = Type.Object({
+  columnId: Type.Integer({ minimum: 1 }),
+});
+
+export const TaskCreateBodySchema = Type.Object({
+  title: Type.String({ minLength: 1, maxLength: 256 }),
+  description: Type.Optional(Type.String({ maxLength: 5000 })),
+  boardId: Type.Integer({ minimum: 1 }),
+  columnId: Type.Integer({ minimum: 1 }),
+});
+
+export type TaskByBoardIdParams = Type.Static<typeof TaskByBoardIdSchema>;
+export type TaskByColumnIdParams = Type.Static<typeof TaskByColumnIdSchema>;
+export type TaskCreateBodyParams = Type.Static<typeof TaskCreateBodySchema>;

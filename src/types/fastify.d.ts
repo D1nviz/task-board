@@ -1,5 +1,6 @@
-import { FastifyInstance } from "fastify";
-import { BoardsController } from "../modules/boards/boards.controller.js";
+import type { Database } from "../core/db/types/index.ts";
+import type { BoardsController } from "../modules/boards/boards.controller.js";
+import type { TasksController } from "../modules/tasks/tasks.controller.ts";
 
 export interface EnvConfig {
   NODE_ENV: "development" | "production" | "test";
@@ -11,7 +12,8 @@ export interface EnvConfig {
 declare module "fastify" {
   interface FastifyInstance {
     config: EnvConfig;
-    db: NodePgDatabase<typeof schema>;
+    db: Database;
     boardsController: BoardsController;
+    tasksController: TasksController;
   }
 }

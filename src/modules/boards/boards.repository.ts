@@ -1,9 +1,9 @@
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { Database } from "../../core/db/types/index.js";
 import type { BoardCreateBody } from "./boards.schema.js";
 import { boards } from "./boards.table.js";
 
 export class BoardsRepository {
-  constructor(private readonly db: NodePgDatabase) {}
+  constructor(private readonly db: Database) {}
 
   getAll() {
     return this.db.select().from(boards);
