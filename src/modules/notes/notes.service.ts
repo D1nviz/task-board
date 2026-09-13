@@ -3,6 +3,7 @@ import type {
   NoteCreateInput,
   NoteDeleteInput,
   NoteGetAllInput,
+  NoteGetByIdInput,
   NoteUpdateInput,
 } from "./notes.schema.js";
 
@@ -11,6 +12,10 @@ export class NotesService {
 
   getAll = (params: NoteGetAllInput) => {
     return this.repository.getAll(params);
+  };
+
+  getById = (params: NoteGetByIdInput) => {
+    return this.repository.getById(params);
   };
 
   create = (data: NoteCreateInput) => {

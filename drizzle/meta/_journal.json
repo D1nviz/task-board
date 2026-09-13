@@ -71,6 +71,13 @@
       "when": 1789293900093,
       "tag": "0009_wooden_goliath",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789295256337,
+      "tag": "0010_organic_mother_askani",
+      "breakpoints": true
     }
   ]
 }

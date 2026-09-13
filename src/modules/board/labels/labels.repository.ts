@@ -1,38 +1,88 @@
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { Database } from "@/core/db/types/index.js";
+import type { Actor } from "@/core/types/actor.js";
+import { boards } from "../boards/boards.table.js";
 import type {
-  LabelCreateInput,
+  LabelCreateBody,
   LabelDeleteInput,
+  LabelGetAllByBoardIdInput,
+  LabelGetByIdInput,
   LabelUpdateInput,
 } from "./labels.schema.js";
 import { labels } from "./labels.table.js";
 
+const columns = {
+  id: labels.id,
+  name: labels.name,
+  boardId: labels.boardId,
+};
+
 export class LabelsRepository {
   constructor(private readonly db: Database) {}
 
-  getAll = () => {
-    return this.db.select({ id: labels.id, name: labels.name }).from(labels);
-  };
+  private ownedBoardIds = ({ userId }: Actor) =>
+    this.db
+      .select({ id: boards.id })
+      .from(boards)
+      .where(eq(boards.userId, userId));
 
-  create = (data: LabelCreateInput) => {
+  findOwnedBoard = ({ boardId, userId }: { boardId: number } & Actor) => {
     return this.db
-      .insert(labels)
-      .values(data)
-      .returning({ id: labels.id, name: labels.name });
+      .select({ id: boards.id })
+      .from(boards)
+      .where(and(eq(boards.id, boardId), eq(boards.userId, userId)));
   };
 
-  update = ({ id, ...data }: LabelUpdateInput) => {
+  getAllByBoardId = ({ boardId, userId }: LabelGetAllByBoardIdInput) => {
+    return this.db
+      .select(columns)
+      .from(labels)
+      .where(
+        and(
+          eq(labels.boardId, boardId),
+          inArray(labels.boardId, this.ownedBoardIds({ userId })),
+        ),
+      );
+  };
+
+  getById = ({ id, userId }: LabelGetByIdInput) => {
+    return this.db
+      .select(columns)
+      .from(labels)
+      .where(
+        and(
+          eq(labels.id, id),
+          inArray(labels.boardId, this.ownedBoardIds({ userId })),
+        ),
+      );
+  };
+
+  create = (data: LabelCreateBody) => {
+    return this.db.insert(labels).values(data).returning(columns);
+  };
+
+  update = ({ id, userId, ...data }: LabelUpdateInput) => {
     return this.db
       .update(labels)
       .set(data)
-      .where(eq(labels.id, id))
-      .returning({ id: labels.id, name: labels.name });
+      .where(
+        and(
+          eq(labels.id, id),
+          inArray(labels.boardId, this.ownedBoardIds({ userId })),
+        ),
+      )
+      .returning(columns);
   };
 
-  delete = ({ id }: LabelDeleteInput) => {
+  delete = ({ id, userId }: LabelDeleteInput) => {
     return this.db
       .delete(labels)
-      .where(eq(labels.id, id))
+      .where(
+        and(
+          eq(labels.id, id),
+          inArray(labels.boardId, this.ownedBoardIds({ userId })),
+        ),
+      )
       .returning({ id: labels.id });
   };
 }

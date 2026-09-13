@@ -2,17 +2,33 @@ import type { LabelsRepository } from "./labels.repository.js";
 import type {
   LabelCreateInput,
   LabelDeleteInput,
+  LabelGetAllByBoardIdInput,
+  LabelGetByIdInput,
   LabelUpdateInput,
 } from "./labels.schema.js";
 
 export class LabelsService {
   constructor(private repository: LabelsRepository) {}
 
-  getAll = () => {
-    return this.repository.getAll();
+  getAllByBoardId = (params: LabelGetAllByBoardIdInput) => {
+    return this.repository.getAllByBoardId(params);
   };
 
-  create = (data: LabelCreateInput) => {
+  getById = (params: LabelGetByIdInput) => {
+    return this.repository.getById(params);
+  };
+
+  create = async ({ userId, ...data }: LabelCreateInput) => {
+    const [board] = await this.repository.findOwnedBoard({
+      boardId: data.boardId,
+      userId,
+    });
+
+    if (!board) {
+      console.log("create label: board not owned", { userId, ...data });
+      return [];
+    }
+
     return this.repository.create(data);
   };
 

@@ -37,4 +37,5 @@ export type BoardIdParams = Type.Static<typeof BoardIdParamsSchema>;
 export type BoardGetAllInput = Actor;
 export type BoardCreateInput = WithActor<BoardCreateBody>;
 export type BoardDeleteInput = WithActor<BoardIdParams>;
+export type BoardGetByIdInput = WithActor<BoardIdParams>;
 export type BoardUpdateInput = WithActor<BoardIdParams & BoardUpdateBody>;

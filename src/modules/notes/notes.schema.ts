@@ -40,4 +40,5 @@ export type NoteIdParams = Type.Static<typeof NoteIdParamsSchema>;
 export type NoteGetAllInput = Actor;
 export type NoteCreateInput = WithActor<NoteCreateBody>;
 export type NoteDeleteInput = WithActor<NoteIdParams>;
+export type NoteGetByIdInput = WithActor<NoteIdParams>;
 export type NoteUpdateInput = WithActor<NoteIdParams & NoteUpdateBody>;

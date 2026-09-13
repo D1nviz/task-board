@@ -21,6 +21,13 @@ const boardsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     handler: boardsController.getAll,
   });
 
+  fastify.get("/:id", {
+    schema: {
+      params: BoardIdParamsSchema,
+    },
+    handler: boardsController.getById,
+  });
+
   fastify.post("/", {
     schema: {
       body: BoardCreateBodySchema,

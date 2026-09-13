@@ -3,6 +3,7 @@ import {
   Type,
 } from "@fastify/type-provider-typebox";
 import {
+  LabelByBoardIdParamsSchema,
   LabelCreateBodySchema,
   LabelIdParamsSchema,
   LabelResponseSchema,
@@ -12,21 +13,26 @@ import {
 const labelsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
   const { labelsController } = fastify;
 
-  fastify.get("/", {
+  fastify.get("/by-board/:boardId", {
     schema: {
+      params: LabelByBoardIdParamsSchema,
       response: {
         200: Type.Array(LabelResponseSchema),
       },
     },
-    handler: labelsController.getAll,
+    handler: labelsController.getAllByBoardId,
+  });
+
+  fastify.get("/:id", {
+    schema: {
+      params: LabelIdParamsSchema,
+    },
+    handler: labelsController.getById,
   });
 
   fastify.post("/", {
     schema: {
       body: LabelCreateBodySchema,
-      response: {
-        201: LabelResponseSchema,
-      },
     },
     handler: labelsController.create,
   });

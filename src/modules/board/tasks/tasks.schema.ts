@@ -15,6 +15,7 @@ export const TaskUpdateBodySchema = Type.Object(
     description: Type.Optional(Type.String({ maxLength: 5000 })),
     priority: Type.Optional(Type.Enum(["low", "medium", "high"])),
     boardColumnId: Type.Optional(Type.Integer({ minimum: 1 })),
+    sortOrder: Type.Optional(Type.Integer({ minimum: 0 })),
   },
   {
     additionalProperties: false,
@@ -37,6 +38,7 @@ export const TaskCreateBodySchema = Type.Object(
     description: Type.Optional(Type.String({ maxLength: 5000 })),
     boardId: Type.Integer({ minimum: 1 }),
     boardColumnId: Type.Optional(Type.Integer({ minimum: 1 })),
+    sortOrder: Type.Optional(Type.Integer({ minimum: 0 })),
   },
   {
     additionalProperties: false,
@@ -57,5 +59,6 @@ export type TaskGetAllByColumnIdInput = WithActor<TaskByColumnIdParams>;
 export type TaskCreateInput = WithActor<TaskCreateBody>;
 export type TaskDeleteInput = WithActor<TaskIdParams>;
 export type TaskUpdateInput = WithActor<TaskIdParams & TaskUpdateBody>;
+export type TaskGetByIdInput = WithActor<TaskIdParams>;
 export type TaskAttachLabelInput = WithActor<TaskLabelParams>;
 export type TaskDetachLabelInput = WithActor<TaskLabelParams>;

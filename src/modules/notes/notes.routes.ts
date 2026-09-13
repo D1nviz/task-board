@@ -21,6 +21,13 @@ const notesRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     handler: notesController.getAll,
   });
 
+  fastify.get("/:id", {
+    schema: {
+      params: NoteIdParamsSchema,
+    },
+    handler: notesController.getById,
+  });
+
   fastify.post("/", {
     schema: {
       body: NoteCreateBodySchema,

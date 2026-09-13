@@ -6,18 +6,38 @@ import type {
   TaskDetachLabelInput,
   TaskGetAllByBoardIdInput,
   TaskGetAllByColumnIdInput,
+  TaskGetByIdInput,
   TaskUpdateInput,
 } from "./tasks.schema.js";
+
+type TaskWithJoinRows = {
+  taskLabels: { label: { id: number; name: string } }[];
+};
+
+const withLabels = <T extends TaskWithJoinRows>({
+  taskLabels,
+  ...task
+}: T) => ({
+  ...task,
+  labels: taskLabels.map(({ label }) => label),
+});
 
 export class TasksService {
   constructor(private repository: TasksRepository) {}
 
-  getAllByBoardId = (params: TaskGetAllByBoardIdInput) => {
-    return this.repository.getAllByBoardId(params);
+  getAllByBoardId = async (params: TaskGetAllByBoardIdInput) => {
+    const rows = await this.repository.getAllByBoardId(params);
+    return rows.map(withLabels);
   };
 
-  getAllByColumnId = (params: TaskGetAllByColumnIdInput) => {
-    return this.repository.getAllByColumnId(params);
+  getAllByColumnId = async (params: TaskGetAllByColumnIdInput) => {
+    const rows = await this.repository.getAllByColumnId(params);
+    return rows.map(withLabels);
+  };
+
+  getById = async (params: TaskGetByIdInput) => {
+    const task = await this.repository.getById(params);
+    return task ? withLabels(task) : undefined;
   };
 
   create = async ({ userId, ...body }: TaskCreateInput) => {

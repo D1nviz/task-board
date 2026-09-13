@@ -8,7 +8,8 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
-import { boardColumns, boards } from "../boards/boards.table.js";
+import { boards } from "../boards/boards.table.js";
+import { boardColumns } from "../columns/columns.table.js";
 import { taskLabels } from "../labels/labels.table.js";
 
 export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
@@ -26,6 +27,7 @@ export const tasks = pgTable("tasks", {
     onDelete: "set null",
   }),
   priority: priorityEnum("priority").notNull().default("medium"),
+  sortOrder: integer("sort_order").notNull().default(0),
   ...buildTimestamps(),
 });
 

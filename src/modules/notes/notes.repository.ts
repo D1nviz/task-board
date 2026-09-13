@@ -4,6 +4,7 @@ import type {
   NoteCreateInput,
   NoteDeleteInput,
   NoteGetAllInput,
+  NoteGetByIdInput,
   NoteUpdateInput,
 } from "./notes.schema.js";
 import { notes } from "./notes.table.js";
@@ -20,6 +21,17 @@ export class NotesRepository {
       })
       .from(notes)
       .where(eq(notes.userId, userId));
+  };
+
+  getById = ({ id, userId }: NoteGetByIdInput) => {
+    return this.db
+      .select({
+        id: notes.id,
+        title: notes.title,
+        description: notes.description,
+      })
+      .from(notes)
+      .where(and(eq(notes.id, id), eq(notes.userId, userId)));
   };
 
   create = (data: NoteCreateInput) => {

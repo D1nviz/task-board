@@ -9,13 +9,28 @@ import type { BoardsService } from "./boards.sevice.js";
 export class BoardsController {
   constructor(private service: BoardsService) {}
 
+  getById = async (
+    req: FastifyRequest<{ Params: BoardIdParams }>,
+    reply: FastifyReply,
+  ) => {
+    const [board] = await this.service.getById({
+      ...req.params,
+      userId: req.user.id,
+    });
+
+    return reply.send(board);
+  };
+
   create = async (
     req: FastifyRequest<{ Body: BoardCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const data = req.body;
-    const result = await this.service.create({ ...data, userId: req.user.id });
-    return reply.send(result);
+    const [board] = await this.service.create({
+      ...req.body,
+      userId: req.user.id,
+    });
+
+    return reply.code(201).send(board);
   };
 
   getAll = async (req: FastifyRequest, reply: FastifyReply) => {

@@ -3,6 +3,7 @@ import type {
   BoardCreateInput,
   BoardDeleteInput,
   BoardGetAllInput,
+  BoardGetByIdInput,
   BoardUpdateInput,
 } from "./boards.schema.js";
 
@@ -11,6 +12,10 @@ export class BoardsService {
 
   getAll(params: BoardGetAllInput) {
     return this.repository.getAll(params);
+  }
+
+  getById(params: BoardGetByIdInput) {
+    return this.repository.getById(params);
   }
 
   create(data: BoardCreateInput) {

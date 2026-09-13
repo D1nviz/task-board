@@ -1,9 +1,11 @@
 export {
-  boardColumns,
-  boardColumnsRelations,
   boards,
   boardsRelations,
 } from "../../modules/board/boards/boards.table.js";
+export {
+  boardColumns,
+  boardColumnsRelations,
+} from "../../modules/board/columns/columns.table.js";
 export {
   labels,
   labelsRelations,

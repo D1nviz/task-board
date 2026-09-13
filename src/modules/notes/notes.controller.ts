@@ -13,6 +13,18 @@ export class NotesController {
     return reply.send(await this.service.getAll({ userId: req.user.id }));
   };
 
+  getById = async (
+    req: FastifyRequest<{ Params: NoteIdParams }>,
+    reply: FastifyReply,
+  ) => {
+    const [note] = await this.service.getById({
+      ...req.params,
+      userId: req.user.id,
+    });
+
+    return reply.send(note);
+  };
+
   create = async (
     req: FastifyRequest<{ Body: NoteCreateBody }>,
     reply: FastifyReply,

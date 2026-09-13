@@ -1,8 +1,9 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 
 import type { Database } from "@/core/db/types/index.js";
 import type { Actor } from "@/core/types/actor.js";
-import { boardColumns, boards } from "../boards/boards.table.js";
+import { boards } from "../boards/boards.table.js";
+import { boardColumns } from "../columns/columns.table.js";
 import { taskLabels } from "../labels/labels.table.js";
 import type {
   TaskAttachLabelInput,
@@ -11,6 +12,7 @@ import type {
   TaskDetachLabelInput,
   TaskGetAllByBoardIdInput,
   TaskGetAllByColumnIdInput,
+  TaskGetByIdInput,
   TaskUpdateInput,
 } from "./tasks.schema.js";
 import { tasks } from "./tasks.table.js";
@@ -56,10 +58,14 @@ export class TasksRepository {
         inArray(tasks.boardId, this.ownedBoardIds({ userId })),
       ),
       with: {
-        taskLabels: true,
-        boardColumn: { columns: { id: true, boardId: true } },
+        taskLabels: {
+          columns: {},
+          with: { label: { columns: { id: true, name: true } } },
+        },
+        boardColumn: { columns: { id: true, title: true, sortOrder: true } },
         board: { columns: { id: true } },
       },
+      orderBy: [asc(tasks.sortOrder), asc(tasks.id)],
     });
   };
 
@@ -70,9 +76,30 @@ export class TasksRepository {
         inArray(tasks.boardId, this.ownedBoardIds({ userId })),
       ),
       with: {
-        taskLabels: true,
-        boardColumn: true,
-        board: true,
+        taskLabels: {
+          columns: {},
+          with: { label: { columns: { id: true, name: true } } },
+        },
+        boardColumn: { columns: { id: true, title: true, sortOrder: true } },
+        board: { columns: { id: true } },
+      },
+      orderBy: [asc(tasks.sortOrder), asc(tasks.id)],
+    });
+  };
+
+  getById = ({ id, userId }: TaskGetByIdInput) => {
+    return this.db.query.tasks.findFirst({
+      where: and(
+        eq(tasks.id, id),
+        inArray(tasks.boardId, this.ownedBoardIds({ userId })),
+      ),
+      with: {
+        taskLabels: {
+          columns: {},
+          with: { label: { columns: { id: true, name: true } } },
+        },
+        boardColumn: { columns: { id: true, title: true, sortOrder: true } },
+        board: { columns: { id: true } },
       },
     });
   };

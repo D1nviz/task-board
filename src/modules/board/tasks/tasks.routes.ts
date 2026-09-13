@@ -25,6 +25,13 @@ const tasksRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     handler: tasksController.getAllByColumnId,
   });
 
+  fastify.get("/:id", {
+    schema: {
+      params: TaskIdParamsSchema,
+    },
+    handler: tasksController.getById,
+  });
+
   fastify.post("/", {
     schema: {
       body: TaskCreateBodySchema,

@@ -36,6 +36,15 @@ export class TasksController {
     );
   };
 
+  getById = async (
+    req: FastifyRequest<{ Params: TaskIdParams }>,
+    reply: FastifyReply,
+  ) => {
+    return reply.send(
+      await this.service.getById({ ...req.params, userId: req.user.id }),
+    );
+  };
+
   create = async (
     req: FastifyRequest<{ Body: TaskCreateBody }>,
     reply: FastifyReply,

@@ -4,16 +4,29 @@ import {
   pgTable,
   primaryKey,
   serial,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
+import { boards } from "../boards/boards.table.js";
 import { tasks } from "../tasks/tasks.table.js";
 
-export const labels = pgTable("labels", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull().unique(),
-  ...buildTimestamps(),
-});
+export const labels = pgTable(
+  "labels",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 100 }).notNull(),
+    boardId: integer("board_id")
+      .references(() => boards.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    ...buildTimestamps(),
+  },
+  (table) => [
+    unique("labels_board_id_name_unique").on(table.boardId, table.name),
+  ],
+);
 
 export const taskLabels = pgTable(
   "task_labels",
@@ -36,7 +49,11 @@ export const taskLabels = pgTable(
   ],
 );
 
-export const labelsRelations = relations(labels, ({ many }) => ({
+export const labelsRelations = relations(labels, ({ one, many }) => ({
+  board: one(boards, {
+    fields: [labels.boardId],
+    references: [boards.id],
+  }),
   taskLabels: many(taskLabels),
 }));
 
