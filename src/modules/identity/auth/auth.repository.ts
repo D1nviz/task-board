@@ -1,11 +1,15 @@
-import { eq } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import type { Database, Transaction } from "@/core/db/types/index.js";
 import type {
   AuthCredentialsCreateInput,
   AuthCredentialsFindInput,
   AuthCredentialsUpdateInput,
+  AuthRefreshTokenCreateInput,
+  AuthRefreshTokenFamilyInput,
+  AuthRefreshTokenFindInput,
+  AuthRefreshTokenMarkUsedInput,
 } from "./auth.schema.js";
-import { credentials } from "./auth.table.js";
+import { credentials, refreshTokens } from "./auth.table.js";
 
 export class AuthRepository {
   constructor(private readonly db: Database) {}
@@ -21,6 +25,42 @@ export class AuthRepository {
     return this.db.query.credentials.findFirst({
       where: eq(credentials.userId, userId),
     });
+  };
+
+  createRefreshToken = async (
+    data: AuthRefreshTokenCreateInput,
+    tx?: Transaction,
+  ) => {
+    return (tx ?? this.db).insert(refreshTokens).values(data);
+  };
+
+  markRefreshTokenUsed = (
+    { id }: AuthRefreshTokenMarkUsedInput,
+    tx?: Transaction,
+  ) => {
+    return (tx ?? this.db)
+      .update(refreshTokens)
+      .set({ usedAt: new Date() })
+      .where(eq(refreshTokens.id, id))
+      .returning({ id: refreshTokens.id });
+  };
+
+  deleteExpired = () => {
+    return this.db
+      .delete(refreshTokens)
+      .where(lt(refreshTokens.expiresAt, new Date()));
+  };
+
+  findRefreshToken = ({ tokenHash }: AuthRefreshTokenFindInput) => {
+    return this.db.query.refreshTokens.findFirst({
+      where: eq(refreshTokens.tokenHash, tokenHash),
+    });
+  };
+
+  deleteFamily = ({ familyId }: AuthRefreshTokenFamilyInput) => {
+    return this.db
+      .delete(refreshTokens)
+      .where(eq(refreshTokens.familyId, familyId));
   };
 
   updatePassword = ({ userId, passwordHash }: AuthCredentialsUpdateInput) => {

@@ -1,10 +1,16 @@
+import { createHash, randomBytes, randomUUIDv7 } from "node:crypto";
 import argon2 from "argon2";
-import type { Database } from "@/core/db/types/index.js";
+import type { Database, Transaction } from "@/core/db/types/index.js";
 import type { UsersRepository } from "../users/users.repository.js";
+import { AUTH_TOKENS_TTL } from "./auth.constants.js";
 import type { AuthRepository } from "./auth.repository.js";
 import type {
   AuthChangePasswordInput,
+  AuthIssueRefreshTokenInput,
   AuthMeInput,
+  AuthRevokeSessionInput,
+  AuthRotateSessionInput,
+  AuthRotateSessionResult,
   AuthSignInInput,
   AuthSignUpInput,
 } from "./auth.schema.js";
@@ -15,6 +21,77 @@ export class AuthService {
     private readonly usersRepository: UsersRepository,
     private readonly db: Database,
   ) {}
+
+  private hashToken = (token: string) =>
+    createHash("sha256").update(token).digest("hex");
+
+  issueRefreshToken = async (
+    { userId, familyId = randomUUIDv7() }: AuthIssueRefreshTokenInput,
+    tx?: Transaction,
+  ) => {
+    const refreshToken = randomBytes(40).toString("hex");
+
+    await this.repository.createRefreshToken(
+      {
+        tokenHash: this.hashToken(refreshToken),
+        expiresAt: new Date(Date.now() + AUTH_TOKENS_TTL.refreshToken * 1000),
+        familyId,
+        userId,
+      },
+      tx,
+    );
+    return { refreshToken, familyId };
+  };
+
+  revokeSession = async ({ token }: AuthRevokeSessionInput) => {
+    const stored = await this.repository.findRefreshToken({
+      tokenHash: this.hashToken(token),
+    });
+
+    if (!stored) {
+      return;
+    }
+    return this.repository.deleteFamily({ familyId: stored.familyId });
+  };
+
+  rotateSession = async ({
+    token,
+  }: AuthRotateSessionInput): Promise<AuthRotateSessionResult> => {
+    const stored = await this.repository.findRefreshToken({
+      tokenHash: this.hashToken(token),
+    });
+
+    if (!stored || stored.expiresAt < new Date()) {
+      return { status: "invalid" };
+    }
+
+    if (stored.usedAt) {
+      await this.repository.deleteFamily({ familyId: stored.familyId });
+
+      return {
+        status: "reuse",
+        userId: stored.userId,
+        familyId: stored.familyId,
+      };
+    }
+
+    const user = await this.usersRepository.findById({ id: stored.userId });
+
+    if (!user) {
+      return { status: "invalid" };
+    }
+
+    return this.db.transaction(async (tx) => {
+      await this.repository.markRefreshTokenUsed({ id: stored.id }, tx);
+
+      const { refreshToken } = await this.issueRefreshToken(
+        { userId: stored.userId, familyId: stored.familyId },
+        tx,
+      );
+
+      return { status: "ok", user, refreshToken };
+    });
+  };
 
   signUp = async (data: AuthSignUpInput) => {
     const passwordHash = await argon2.hash(data.password);
@@ -37,7 +114,12 @@ export class AuthService {
         tx,
       );
 
-      return user;
+      const { refreshToken } = await this.issueRefreshToken(
+        { userId: user.id },
+        tx,
+      );
+
+      return { user, refreshToken };
     });
   };
 

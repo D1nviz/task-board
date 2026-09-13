@@ -23,6 +23,10 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     handler: authController.signIn,
   });
 
+  fastify.post("/refresh", {
+    handler: authController.refresh,
+  });
+
   fastify.get("/me", {
     onRequest: [fastify.authenticate],
     schema: {

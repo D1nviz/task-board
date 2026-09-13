@@ -20,6 +20,8 @@ export {
 export {
   credentials,
   credentialsRelations,
+  refreshTokens,
+  refreshTokensRelations,
 } from "../../modules/identity/auth/auth.table.js";
 export {
   rolesEnum,

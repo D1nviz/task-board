@@ -4,6 +4,7 @@ import type { ColumnsController } from "../modules/board/columns/columns.control
 import type { LabelsController } from "../modules/board/labels/labels.controller.js";
 import type { TasksController } from "../modules/board/tasks/tasks.controller.js";
 import type { AuthController } from "../modules/identity/auth/auth.controller.js";
+import type { Role } from "../modules/identity/users/users.schema.js";
 import type { NotesController } from "../modules/notes/notes.controller.js";
 
 export interface EnvConfig {
@@ -30,7 +31,7 @@ declare module "fastify" {
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
-    payload: { id: number; role: "admin" | "user" };
-    user: { id: number; role: "admin" | "user" };
+    payload: { id: number; role: Role };
+    user: { id: number; role: Role };
   }
 }
