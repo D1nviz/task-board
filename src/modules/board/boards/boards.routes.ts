@@ -6,6 +6,7 @@ import {
   BoardCreateBodySchema,
   BoardIdParamsSchema,
   BoardResponseSchema,
+  BoardUpdateBodySchema,
 } from "./boards.schema.js";
 
 const boardsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -25,6 +26,14 @@ const boardsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       body: BoardCreateBodySchema,
     },
     handler: boardsController.create,
+  });
+
+  fastify.patch("/:id", {
+    schema: {
+      params: BoardIdParamsSchema,
+      body: BoardUpdateBodySchema,
+    },
+    handler: boardsController.update,
   });
 
   fastify.delete("/:id", {

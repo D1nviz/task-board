@@ -6,6 +6,7 @@ import {
   LabelCreateBodySchema,
   LabelIdParamsSchema,
   LabelResponseSchema,
+  LabelUpdateBodySchema,
 } from "./labels.schema.js";
 
 const labelsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -28,6 +29,14 @@ const labelsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       },
     },
     handler: labelsController.create,
+  });
+
+  fastify.patch("/:id", {
+    schema: {
+      params: LabelIdParamsSchema,
+      body: LabelUpdateBodySchema,
+    },
+    handler: labelsController.update,
   });
 
   fastify.delete("/:id", {

@@ -5,6 +5,7 @@ import type {
   TaskCreateBody,
   TaskIdParams,
   TaskLabelParams,
+  TaskUpdateBody,
 } from "./tasks.schema.js";
 import type { TasksService } from "./tasks.service.js";
 
@@ -44,6 +45,19 @@ export class TasksController {
       userId: req.user.id,
     });
     return reply.code(201).send(task);
+  };
+
+  update = async (
+    req: FastifyRequest<{ Params: TaskIdParams; Body: TaskUpdateBody }>,
+    reply: FastifyReply,
+  ) => {
+    const [row] = await this.service.update({
+      ...req.params,
+      ...req.body,
+      userId: req.user.id,
+    });
+
+    return reply.send(row);
   };
 
   delete = async (

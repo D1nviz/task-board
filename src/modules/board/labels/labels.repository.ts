@@ -1,6 +1,10 @@
 import { eq } from "drizzle-orm";
 import type { Database } from "@/core/db/types/index.js";
-import type { LabelCreateInput, LabelDeleteInput } from "./labels.schema.js";
+import type {
+  LabelCreateInput,
+  LabelDeleteInput,
+  LabelUpdateInput,
+} from "./labels.schema.js";
 import { labels } from "./labels.table.js";
 
 export class LabelsRepository {
@@ -14,6 +18,14 @@ export class LabelsRepository {
     return this.db
       .insert(labels)
       .values(data)
+      .returning({ id: labels.id, name: labels.name });
+  };
+
+  update = ({ id, ...data }: LabelUpdateInput) => {
+    return this.db
+      .update(labels)
+      .set(data)
+      .where(eq(labels.id, id))
       .returning({ id: labels.id, name: labels.name });
   };
 

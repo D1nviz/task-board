@@ -3,6 +3,7 @@ import type {
   BoardCreateInput,
   BoardDeleteInput,
   BoardGetAllInput,
+  BoardUpdateInput,
 } from "./boards.schema.js";
 
 export class BoardsService {
@@ -14,6 +15,12 @@ export class BoardsService {
 
   create(data: BoardCreateInput) {
     return this.repository.create(data);
+  }
+
+  async update(params: BoardUpdateInput) {
+    const rows = await this.repository.update(params);
+    console.log("updated board:", rows);
+    return rows;
   }
 
   async delete(params: BoardDeleteInput) {

@@ -4,6 +4,7 @@ import type {
   BoardCreateInput,
   BoardDeleteInput,
   BoardGetAllInput,
+  BoardUpdateInput,
 } from "./boards.schema.js";
 import { boards } from "./boards.table.js";
 
@@ -18,6 +19,14 @@ export class BoardsRepository {
     return this.db
       .insert(boards)
       .values(data)
+      .returning({ id: boards.id, title: boards.title });
+  }
+
+  update({ id, userId, ...data }: BoardUpdateInput) {
+    return this.db
+      .update(boards)
+      .set(data)
+      .where(and(eq(boards.id, id), eq(boards.userId, userId)))
       .returning({ id: boards.id, title: boards.title });
   }
 

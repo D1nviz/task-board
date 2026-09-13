@@ -2,7 +2,7 @@ import { and, eq, inArray } from "drizzle-orm";
 
 import type { Database } from "@/core/db/types/index.js";
 import type { Actor } from "@/core/types/actor.js";
-import { boards } from "../boards/boards.table.js";
+import { boardColumns, boards } from "../boards/boards.table.js";
 import { taskLabels } from "../labels/labels.table.js";
 import type {
   TaskAttachLabelInput,
@@ -11,6 +11,7 @@ import type {
   TaskDetachLabelInput,
   TaskGetAllByBoardIdInput,
   TaskGetAllByColumnIdInput,
+  TaskUpdateInput,
 } from "./tasks.schema.js";
 import { tasks } from "./tasks.table.js";
 
@@ -78,6 +79,31 @@ export class TasksRepository {
 
   create = (body: TaskCreateBody) => {
     return this.db.insert(tasks).values(body).returning();
+  };
+
+  findOwnedColumn = ({ columnId, userId }: { columnId: number } & Actor) => {
+    return this.db
+      .select({ id: boardColumns.id })
+      .from(boardColumns)
+      .where(
+        and(
+          eq(boardColumns.id, columnId),
+          inArray(boardColumns.boardId, this.ownedBoardIds({ userId })),
+        ),
+      );
+  };
+
+  update = ({ id, userId, ...data }: TaskUpdateInput) => {
+    return this.db
+      .update(tasks)
+      .set(data)
+      .where(
+        and(
+          eq(tasks.id, id),
+          inArray(tasks.boardId, this.ownedBoardIds({ userId })),
+        ),
+      )
+      .returning();
   };
 
   delete = ({ id, userId }: TaskDeleteInput) => {

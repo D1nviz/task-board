@@ -1,5 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { LabelCreateBody, LabelIdParams } from "./labels.schema.js";
+import type {
+  LabelCreateBody,
+  LabelIdParams,
+  LabelUpdateBody,
+} from "./labels.schema.js";
 import type { LabelsService } from "./labels.service.js";
 
 export class LabelsController {
@@ -15,6 +19,18 @@ export class LabelsController {
   ) => {
     const [label] = await this.service.create(req.body);
     return reply.code(201).send(label);
+  };
+
+  update = async (
+    req: FastifyRequest<{ Params: LabelIdParams; Body: LabelUpdateBody }>,
+    reply: FastifyReply,
+  ) => {
+    const [row] = await this.service.update({
+      ...req.params,
+      ...req.body,
+    });
+
+    return reply.send(row);
   };
 
   delete = async (

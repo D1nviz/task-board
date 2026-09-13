@@ -5,6 +5,7 @@ import {
   TaskCreateBodySchema,
   TaskIdParamsSchema,
   TaskLabelParamsSchema,
+  TaskUpdateBodySchema,
 } from "./tasks.schema.js";
 
 const tasksRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -29,6 +30,14 @@ const tasksRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       body: TaskCreateBodySchema,
     },
     handler: tasksController.create,
+  });
+
+  fastify.patch("/:id", {
+    schema: {
+      params: TaskIdParamsSchema,
+      body: TaskUpdateBodySchema,
+    },
+    handler: tasksController.update,
   });
 
   fastify.delete("/:id", {

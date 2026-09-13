@@ -6,6 +6,7 @@ import {
   NoteCreateBodySchema,
   NoteIdParamsSchema,
   NoteResponseSchema,
+  NoteUpdateBodySchema,
 } from "./notes.schema.js";
 
 const notesRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
@@ -28,6 +29,14 @@ const notesRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       },
     },
     handler: notesController.create,
+  });
+
+  fastify.patch("/:id", {
+    schema: {
+      params: NoteIdParamsSchema,
+      body: NoteUpdateBodySchema,
+    },
+    handler: notesController.update,
   });
 
   fastify.delete("/:id", {

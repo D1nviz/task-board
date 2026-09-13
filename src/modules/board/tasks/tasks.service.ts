@@ -6,6 +6,7 @@ import type {
   TaskDetachLabelInput,
   TaskGetAllByBoardIdInput,
   TaskGetAllByColumnIdInput,
+  TaskUpdateInput,
 } from "./tasks.schema.js";
 
 export class TasksService {
@@ -31,6 +32,24 @@ export class TasksService {
     }
 
     return this.repository.create(body);
+  };
+
+  update = async ({ userId, ...params }: TaskUpdateInput) => {
+    if (params.boardColumnId !== undefined) {
+      const [column] = await this.repository.findOwnedColumn({
+        columnId: params.boardColumnId,
+        userId,
+      });
+
+      if (!column) {
+        console.log("update task: column not owned", { userId, ...params });
+        return [];
+      }
+    }
+
+    const rows = await this.repository.update({ userId, ...params });
+    console.log("updated task:", rows);
+    return rows;
   };
 
   delete = async (params: TaskDeleteInput) => {

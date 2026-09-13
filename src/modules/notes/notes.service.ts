@@ -3,6 +3,7 @@ import type {
   NoteCreateInput,
   NoteDeleteInput,
   NoteGetAllInput,
+  NoteUpdateInput,
 } from "./notes.schema.js";
 
 export class NotesService {
@@ -14,6 +15,12 @@ export class NotesService {
 
   create = (data: NoteCreateInput) => {
     return this.repository.create(data);
+  };
+
+  update = async (params: NoteUpdateInput) => {
+    const rows = await this.repository.update(params);
+    console.log("updated note:", rows);
+    return rows;
   };
 
   delete = async (params: NoteDeleteInput) => {

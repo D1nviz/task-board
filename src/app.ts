@@ -11,6 +11,7 @@ import swaggerPlugin from "./core/plugins/swagger.js";
 export function buildApp() {
   const app = Fastify({
     logger: { transport: { target: "pino-pretty" } },
+    ajv: { customOptions: { removeAdditional: false } },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   app.register(envPlugin);
