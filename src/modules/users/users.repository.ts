@@ -6,8 +6,6 @@ export class UsersRepository {
   constructor(private readonly db: Database) {}
 
   create = async (data: UserCreateBodyParams, tx?: Transaction) => {
-    return (tx ?? this.db).insert(users).values(data).returning({
-      id: users.id,
-    });
+    return (tx ?? this.db).insert(users).values(data).returning();
   };
 }

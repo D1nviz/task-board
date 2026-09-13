@@ -9,6 +9,8 @@ const boardsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const service = new BoardsService(repository);
   const controller = new BoardsController(service);
 
+  fastify.addHook("onRequest", fastify.authenticate);
+
   fastify.decorate("boardsController", controller);
   await fastify.register(boardsRoutes);
 };

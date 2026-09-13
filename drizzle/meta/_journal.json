@@ -57,6 +57,13 @@
       "when": 1789287365492,
       "tag": "0007_same_shriek",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789291464993,
+      "tag": "0008_short_nitro",
+      "breakpoints": true
     }
   ]
 }

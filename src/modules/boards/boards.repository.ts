@@ -1,26 +1,30 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { Database } from "../../core/db/types/index.js";
-import type { BoardCreateBody, BoardIdParams } from "./boards.schema.js";
+import type {
+  BoardCreateData,
+  BoardDeleteParams,
+  BoardGetAllParams,
+} from "./boards.schema.js";
 import { boards } from "./boards.table.js";
 
 export class BoardsRepository {
   constructor(private readonly db: Database) {}
 
-  getAll() {
-    return this.db.select().from(boards);
+  getAll({ userId }: BoardGetAllParams) {
+    return this.db.select().from(boards).where(eq(boards.userId, userId));
   }
 
-  create(data: BoardCreateBody) {
+  create(data: BoardCreateData) {
     return this.db
       .insert(boards)
       .values(data)
       .returning({ id: boards.id, title: boards.title });
   }
 
-  delete({ id }: BoardIdParams) {
+  delete({ id, userId }: BoardDeleteParams) {
     return this.db
       .delete(boards)
-      .where(eq(boards.id, id))
+      .where(and(eq(boards.id, id), eq(boards.userId, userId)))
       .returning({ id: boards.id });
   }
 }

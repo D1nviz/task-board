@@ -10,19 +10,19 @@ export class BoardsController {
     reply: FastifyReply,
   ) => {
     const data = req.body;
-    const result = await this.service.create(data);
+    const result = await this.service.create({ ...data, userId: req.user.id });
     return reply.send(result);
   };
 
-  getAll = async (_req: FastifyRequest, reply: FastifyReply) => {
-    return reply.send(await this.service.getAll());
+  getAll = async (req: FastifyRequest, reply: FastifyReply) => {
+    return reply.send(await this.service.getAll({ userId: req.user.id }));
   };
 
   delete = async (
     req: FastifyRequest<{ Params: BoardIdParams }>,
     reply: FastifyReply,
   ) => {
-    await this.service.delete(req.params);
+    await this.service.delete({ ...req.params, userId: req.user.id });
     return reply.code(204).send();
   };
 }
