@@ -6,7 +6,7 @@ import {
   serial,
   varchar,
 } from "drizzle-orm/pg-core";
-import { buildTimestamps } from "../../core/db/helpers/timestamp.js";
+import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
 import { tasks } from "../tasks/tasks.table.js";
 
 export const labels = pgTable("labels", {

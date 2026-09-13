@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { pgEnum, pgTable, serial, varchar } from "drizzle-orm/pg-core";
-import { buildTimestamps } from "../../core/db/helpers/timestamp.js";
+import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
 import { credentials } from "../auth/auth.table.js";
 
 export const rolesEnum = pgEnum("role", ["admin", "user"]);

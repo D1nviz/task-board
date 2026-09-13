@@ -1,6 +1,6 @@
 import type { JWT } from "@fastify/jwt";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { EnvConfig } from "../../types/fastify.js";
+import type { EnvConfig } from "@/types/fastify.js";
 import { ACCESS_TOKEN_TTL, AUTH_TOKENS } from "./auth.constants.js";
 import type {
   AuthChangePasswordBody,

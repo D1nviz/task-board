@@ -6,6 +6,7 @@ const autoloadPlugin: FastifyPluginAsyncTypebox = async (fastify) => {
   await fastify.register(AutoLoad, {
     dir: join(import.meta.dirname, "../../modules"),
     matchFilter: (path) => /\.module\.(ts|js)$/.test(path),
+    dirNameRoutePrefix: false,
   });
 };
 

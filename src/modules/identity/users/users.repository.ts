@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import type { Database, Transaction } from "../../core/db/types/index.js";
+import type { Database, Transaction } from "@/core/db/types/index.js";
 import type {
   UserCreateInput,
   UserFindByEmailInput,

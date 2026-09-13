@@ -7,7 +7,7 @@ import {
   text,
   varchar,
 } from "drizzle-orm/pg-core";
-import { buildTimestamps } from "../../core/db/helpers/timestamp.js";
+import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
 import { boardColumns, boards } from "../boards/boards.table.js";
 import { taskLabels } from "../labels/labels.table.js";
 

@@ -12,7 +12,7 @@ const tasksModule: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.addHook("onRequest", fastify.authenticate);
 
   fastify.decorate("tasksController", controller);
-  await fastify.register(tasksRoutes);
+  await fastify.register(tasksRoutes, { prefix: "/tasks" });
 };
 
 export default tasksModule;

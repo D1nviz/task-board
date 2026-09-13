@@ -3,7 +3,7 @@ import fastifyJwt from "@fastify/jwt";
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 
 import fp from "fastify-plugin";
-import { AUTH_TOKENS } from "../../modules/auth/auth.constants.js";
+import { AUTH_TOKENS } from "../../modules/identity/auth/auth.constants.js";
 
 const jwtPlugin: FastifyPluginAsyncTypebox = async (fastify) => {
   await fastify.register(fastifyJwt, {

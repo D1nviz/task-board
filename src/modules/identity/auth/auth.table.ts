@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
-import { buildTimestamps } from "../../core/db/helpers/timestamp.js";
+import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
 import { users } from "../users/users.table.js";
 
 export const credentials = pgTable("credentials", {

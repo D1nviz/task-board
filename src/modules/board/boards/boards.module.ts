@@ -12,7 +12,7 @@ const boardsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.addHook("onRequest", fastify.authenticate);
 
   fastify.decorate("boardsController", controller);
-  await fastify.register(boardsRoutes);
+  await fastify.register(boardsRoutes, { prefix: "/boards" });
 };
 
 export default boardsModule;

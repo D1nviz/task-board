@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import type { Database } from "../../core/db/types/index.js";
+import type { Database } from "@/core/db/types/index.js";
 import type { LabelCreateInput, LabelDeleteInput } from "./labels.schema.js";
 import { labels } from "./labels.table.js";
 

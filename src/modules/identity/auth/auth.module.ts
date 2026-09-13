@@ -12,7 +12,7 @@ const authModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const controller = new AuthController(service, fastify.jwt, fastify.config);
 
   fastify.decorate("authController", controller);
-  await fastify.register(authRoutes);
+  await fastify.register(authRoutes, { prefix: "/auth" });
 };
 
 export default authModule;

@@ -1,5 +1,5 @@
 import Type from "typebox";
-import type { Actor } from "../../core/types/actor.js";
+import type { Actor } from "@/core/types/actor.js";
 import { UserCreateBodySchema } from "../users/users.schema.js";
 
 export const AuthSignUpBodySchema = Type.Object(

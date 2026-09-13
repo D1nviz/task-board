@@ -1,5 +1,5 @@
 import { Type } from "typebox";
-import type { WithActor } from "../../core/types/actor.js";
+import type { WithActor } from "@/core/types/actor.js";
 
 export const TaskByBoardIdParamsSchema = Type.Object({
   boardId: Type.Integer({ minimum: 1 }),

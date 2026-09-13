@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import type { Database } from "../../core/db/types/index.js";
+import type { Database } from "@/core/db/types/index.js";
 import type {
   BoardCreateInput,
   BoardDeleteInput,

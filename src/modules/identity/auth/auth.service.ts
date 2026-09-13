@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import type { Database } from "../../core/db/types/index.js";
+import type { Database } from "@/core/db/types/index.js";
 import type { UsersRepository } from "../users/users.repository.js";
 import type { AuthRepository } from "./auth.repository.js";
 import type {

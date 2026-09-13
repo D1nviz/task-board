@@ -1,5 +1,5 @@
 import { Type } from "typebox";
-import type { Actor, WithActor } from "../../core/types/actor.js";
+import type { Actor, WithActor } from "@/core/types/actor.js";
 
 export const NoteResponseSchema = Type.Object({
   id: Type.Number(),

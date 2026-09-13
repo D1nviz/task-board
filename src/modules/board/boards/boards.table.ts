@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
-import { buildTimestamps } from "../../core/db/helpers/timestamp.js";
+import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
+import { users } from "../../identity/users/users.table.js";
 import { tasks } from "../tasks/tasks.table.js";
-import { users } from "../users/users.table.js";
 
 export const boards = pgTable("boards", {
   id: serial("id").primaryKey(),

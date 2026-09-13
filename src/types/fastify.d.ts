@@ -1,9 +1,9 @@
 import type { Database } from "../core/db/types/index.js";
-import type { AuthController } from "../modules/auth/auth.controller.js";
-import type { BoardsController } from "../modules/boards/boards.controller.js";
-import type { LabelsController } from "../modules/labels/labels.controller.js";
+import type { BoardsController } from "../modules/board/boards/boards.controller.js";
+import type { LabelsController } from "../modules/board/labels/labels.controller.js";
+import type { TasksController } from "../modules/board/tasks/tasks.controller.js";
+import type { AuthController } from "../modules/identity/auth/auth.controller.js";
 import type { NotesController } from "../modules/notes/notes.controller.js";
-import type { TasksController } from "../modules/tasks/tasks.controller.js";
 
 export interface EnvConfig {
   NODE_ENV: "development" | "production" | "test";

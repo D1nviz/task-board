@@ -12,7 +12,7 @@ const notesModule: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.addHook("onRequest", fastify.authenticate);
 
   fastify.decorate("notesController", controller);
-  await fastify.register(notesRoutes);
+  await fastify.register(notesRoutes, { prefix: "/notes" });
 };
 
 export default notesModule;

@@ -1,7 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 
-import type { Database } from "../../core/db/types/index.js";
-import type { Actor } from "../../core/types/actor.js";
+import type { Database } from "@/core/db/types/index.js";
+import type { Actor } from "@/core/types/actor.js";
 import { boards } from "../boards/boards.table.js";
 import { taskLabels } from "../labels/labels.table.js";
 import type {
