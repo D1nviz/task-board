@@ -1,3 +1,5 @@
+import { API_PREFIX } from "@/core/constants/api.constants.js";
+
 export const AUTH_TOKENS = {
   accessToken: "accessToken",
   refreshToken: "refreshToken",
@@ -10,5 +12,5 @@ export const AUTH_TOKENS_TTL = {
 
 export const AUTH_COOKIE_PATHS = {
   [AUTH_TOKENS.accessToken]: "/",
-  [AUTH_TOKENS.refreshToken]: "/auth/refresh",
+  [AUTH_TOKENS.refreshToken]: `${API_PREFIX}/auth/refresh`,
 } as const;
