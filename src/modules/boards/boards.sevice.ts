@@ -1,22 +1,22 @@
 import type { BoardsRepository } from "./boards.repository.js";
 import type {
-  BoardCreateData,
-  BoardDeleteParams,
-  BoardGetAllParams,
+  BoardCreateInput,
+  BoardDeleteInput,
+  BoardGetAllInput,
 } from "./boards.schema.js";
 
 export class BoardsService {
   constructor(private repository: BoardsRepository) {}
 
-  getAll(params: BoardGetAllParams) {
+  getAll(params: BoardGetAllInput) {
     return this.repository.getAll(params);
   }
 
-  create(data: BoardCreateData) {
+  create(data: BoardCreateInput) {
     return this.repository.create(data);
   }
 
-  async delete(params: BoardDeleteParams) {
+  async delete(params: BoardDeleteInput) {
     const rows = await this.repository.delete(params);
     console.log("deleted board:", rows);
     return rows;

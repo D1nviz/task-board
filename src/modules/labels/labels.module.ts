@@ -9,6 +9,8 @@ const labelsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const service = new LabelsService(repository);
   const controller = new LabelsController(service);
 
+  fastify.addHook("onRequest", fastify.authenticate);
+
   fastify.decorate("labelsController", controller);
   await fastify.register(labelsRoutes);
 };

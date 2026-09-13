@@ -15,6 +15,10 @@ export {
   taskLabelsRelations,
 } from "../../modules/labels/labels.table.js";
 export {
+  notes,
+  notesRelations,
+} from "../../modules/notes/notes.table.js";
+export {
   priorityEnum,
   tasks,
   tasksRelations,

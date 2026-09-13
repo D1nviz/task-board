@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import {
-  TaskByBoardIdSchema,
-  TaskByColumnIdSchema,
+  TaskByBoardIdParamsSchema,
+  TaskByColumnIdParamsSchema,
   TaskCreateBodySchema,
   TaskIdParamsSchema,
   TaskLabelParamsSchema,
@@ -12,14 +12,14 @@ const tasksRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get("/by-board/:boardId", {
     schema: {
-      params: TaskByBoardIdSchema,
+      params: TaskByBoardIdParamsSchema,
     },
     handler: tasksController.getAllByBoardId,
   });
 
   fastify.get("/by-column/:columnId", {
     schema: {
-      params: TaskByColumnIdSchema,
+      params: TaskByColumnIdParamsSchema,
     },
     handler: tasksController.getAllByColumnId,
   });

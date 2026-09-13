@@ -9,6 +9,8 @@ const tasksModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const service = new TasksService(repository);
   const controller = new TasksController(service);
 
+  fastify.addHook("onRequest", fastify.authenticate);
+
   fastify.decorate("tasksController", controller);
   await fastify.register(tasksRoutes);
 };

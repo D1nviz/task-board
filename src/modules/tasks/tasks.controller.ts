@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type {
   TaskByBoardIdParams,
   TaskByColumnIdParams,
-  TaskCreateBodyParams,
+  TaskCreateBody,
   TaskIdParams,
   TaskLabelParams,
 } from "./tasks.schema.js";
@@ -15,23 +15,34 @@ export class TasksController {
     req: FastifyRequest<{ Params: TaskByBoardIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { boardId } = req.params;
-    return reply.send(await this.service.getAllByBoardId({ boardId }));
+    return reply.send(
+      await this.service.getAllByBoardId({
+        ...req.params,
+        userId: req.user.id,
+      }),
+    );
   };
 
   getAllByColumnId = async (
     req: FastifyRequest<{ Params: TaskByColumnIdParams }>,
     reply: FastifyReply,
   ) => {
-    const { columnId } = req.params;
-    return reply.send(await this.service.getAllByColumnId({ columnId }));
+    return reply.send(
+      await this.service.getAllByColumnId({
+        ...req.params,
+        userId: req.user.id,
+      }),
+    );
   };
 
   create = async (
-    req: FastifyRequest<{ Body: TaskCreateBodyParams }>,
+    req: FastifyRequest<{ Body: TaskCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const [task] = await this.service.create(req.body);
+    const [task] = await this.service.create({
+      ...req.body,
+      userId: req.user.id,
+    });
     return reply.code(201).send(task);
   };
 
@@ -39,7 +50,7 @@ export class TasksController {
     req: FastifyRequest<{ Params: TaskIdParams }>,
     reply: FastifyReply,
   ) => {
-    await this.service.delete(req.params);
+    await this.service.delete({ ...req.params, userId: req.user.id });
     return reply.code(204).send();
   };
 
@@ -47,7 +58,7 @@ export class TasksController {
     req: FastifyRequest<{ Params: TaskLabelParams }>,
     reply: FastifyReply,
   ) => {
-    await this.service.attachLabel(req.params);
+    await this.service.attachLabel({ ...req.params, userId: req.user.id });
     return reply.code(204).send();
   };
 
@@ -55,7 +66,7 @@ export class TasksController {
     req: FastifyRequest<{ Params: TaskLabelParams }>,
     reply: FastifyReply,
   ) => {
-    await this.service.detachLabel(req.params);
+    await this.service.detachLabel({ ...req.params, userId: req.user.id });
     return reply.code(204).send();
   };
 }

@@ -1,5 +1,5 @@
 import type { LabelsRepository } from "./labels.repository.js";
-import type { LabelCreateBody, LabelIdParams } from "./labels.schema.js";
+import type { LabelCreateInput, LabelDeleteInput } from "./labels.schema.js";
 
 export class LabelsService {
   constructor(private repository: LabelsRepository) {}
@@ -8,11 +8,11 @@ export class LabelsService {
     return this.repository.getAll();
   };
 
-  create = (data: LabelCreateBody) => {
+  create = (data: LabelCreateInput) => {
     return this.repository.create(data);
   };
 
-  delete = async (params: LabelIdParams) => {
+  delete = async (params: LabelDeleteInput) => {
     const rows = await this.repository.delete(params);
     console.log("deleted label:", rows);
     return rows;
