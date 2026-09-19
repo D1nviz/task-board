@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  foreignKey,
   integer,
   pgTable,
   primaryKey,
@@ -10,6 +11,14 @@ import {
 import { buildTimestamps } from "@/core/db/helpers/timestamp.js";
 import { boards } from "../boards/boards.table.js";
 import { tasks } from "../tasks/tasks.table.js";
+
+export const LABELS_CONSTRAINTS = {
+  boardIdNameUnique: "labels_board_id_name_unique",
+} as const;
+
+export const TASK_LABELS_CONSTRAINTS = {
+  labelFk: "task_labels_label_id_labels_id_fk",
+} as const;
 
 export const labels = pgTable(
   "labels",
@@ -24,7 +33,7 @@ export const labels = pgTable(
     ...buildTimestamps(),
   },
   (table) => [
-    unique("labels_board_id_name_unique").on(table.boardId, table.name),
+    unique(LABELS_CONSTRAINTS.boardIdNameUnique).on(table.boardId, table.name),
   ],
 );
 
@@ -36,16 +45,17 @@ export const taskLabels = pgTable(
         onDelete: "cascade",
       })
       .notNull(),
-    labelId: integer("label_id")
-      .references(() => labels.id, {
-        onDelete: "cascade",
-      })
-      .notNull(),
+    labelId: integer("label_id").notNull(),
   },
   (table) => [
     primaryKey({
       columns: [table.taskId, table.labelId],
     }),
+    foreignKey({
+      name: TASK_LABELS_CONSTRAINTS.labelFk,
+      columns: [table.labelId],
+      foreignColumns: [labels.id],
+    }).onDelete("cascade"),
   ],
 );
 

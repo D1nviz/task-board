@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type {
   ColumnByBoardIdParams,
   ColumnCreateBody,
@@ -26,37 +27,34 @@ export class ColumnsController {
     req: FastifyRequest<{ Params: ColumnIdParams }>,
     reply: FastifyReply,
   ) => {
-    const [column] = await this.service.getById({
-      ...req.params,
-      userId: req.user.id,
-    });
-
-    return reply.send(column);
+    return reply.send(
+      await this.service.getById({ ...req.params, userId: req.user.id }),
+    );
   };
 
   create = async (
     req: FastifyRequest<{ Body: ColumnCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const [column] = await this.service.create({
+    const column = await this.service.create({
       ...req.body,
       userId: req.user.id,
     });
 
-    return reply.code(201).send(column);
+    return reply.code(HTTP_STATUS.created).send(column);
   };
 
   update = async (
     req: FastifyRequest<{ Params: ColumnIdParams; Body: ColumnUpdateBody }>,
     reply: FastifyReply,
   ) => {
-    const [column] = await this.service.update({
-      ...req.params,
-      ...req.body,
-      userId: req.user.id,
-    });
-
-    return reply.send(column);
+    return reply.send(
+      await this.service.update({
+        ...req.params,
+        ...req.body,
+        userId: req.user.id,
+      }),
+    );
   };
 
   delete = async (
@@ -64,7 +62,6 @@ export class ColumnsController {
     reply: FastifyReply,
   ) => {
     await this.service.delete({ ...req.params, userId: req.user.id });
-
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 }

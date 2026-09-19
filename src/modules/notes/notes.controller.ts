@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type {
   NoteCreateBody,
   NoteIdParams,
@@ -17,37 +18,34 @@ export class NotesController {
     req: FastifyRequest<{ Params: NoteIdParams }>,
     reply: FastifyReply,
   ) => {
-    const [note] = await this.service.getById({
-      ...req.params,
-      userId: req.user.id,
-    });
-
-    return reply.send(note);
+    return reply.send(
+      await this.service.getById({ ...req.params, userId: req.user.id }),
+    );
   };
 
   create = async (
     req: FastifyRequest<{ Body: NoteCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const [note] = await this.service.create({
+    const note = await this.service.create({
       ...req.body,
       userId: req.user.id,
     });
 
-    return reply.code(201).send(note);
+    return reply.code(HTTP_STATUS.created).send(note);
   };
 
   update = async (
     req: FastifyRequest<{ Params: NoteIdParams; Body: NoteUpdateBody }>,
     reply: FastifyReply,
   ) => {
-    const [row] = await this.service.update({
-      ...req.params,
-      ...req.body,
-      userId: req.user.id,
-    });
-
-    return reply.send(row);
+    return reply.send(
+      await this.service.update({
+        ...req.params,
+        ...req.body,
+        userId: req.user.id,
+      }),
+    );
   };
 
   delete = async (
@@ -55,7 +53,6 @@ export class NotesController {
     reply: FastifyReply,
   ) => {
     await this.service.delete({ ...req.params, userId: req.user.id });
-
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 }

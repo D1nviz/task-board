@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type {
   LabelByBoardIdParams,
   LabelCreateBody,
@@ -26,37 +27,34 @@ export class LabelsController {
     req: FastifyRequest<{ Params: LabelIdParams }>,
     reply: FastifyReply,
   ) => {
-    const [label] = await this.service.getById({
-      ...req.params,
-      userId: req.user.id,
-    });
-
-    return reply.send(label);
+    return reply.send(
+      await this.service.getById({ ...req.params, userId: req.user.id }),
+    );
   };
 
   create = async (
     req: FastifyRequest<{ Body: LabelCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const [label] = await this.service.create({
+    const label = await this.service.create({
       ...req.body,
       userId: req.user.id,
     });
 
-    return reply.code(201).send(label);
+    return reply.code(HTTP_STATUS.created).send(label);
   };
 
   update = async (
     req: FastifyRequest<{ Params: LabelIdParams; Body: LabelUpdateBody }>,
     reply: FastifyReply,
   ) => {
-    const [label] = await this.service.update({
-      ...req.params,
-      ...req.body,
-      userId: req.user.id,
-    });
-
-    return reply.send(label);
+    return reply.send(
+      await this.service.update({
+        ...req.params,
+        ...req.body,
+        userId: req.user.id,
+      }),
+    );
   };
 
   delete = async (
@@ -64,7 +62,6 @@ export class LabelsController {
     reply: FastifyReply,
   ) => {
     await this.service.delete({ ...req.params, userId: req.user.id });
-
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 }

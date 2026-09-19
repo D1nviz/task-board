@@ -19,11 +19,10 @@ export const LabelCreateBodySchema = Type.Object(
 
 export const LabelUpdateBodySchema = Type.Object(
   {
-    name: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
+    name: Type.String({ minLength: 1, maxLength: 100 }),
   },
   {
     additionalProperties: false,
-    minProperties: 1,
   },
 );
 

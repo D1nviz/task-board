@@ -1,4 +1,6 @@
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { BoardAccess } from "../boards/board-access.js";
+import { BoardsRepository } from "../boards/boards.repository.js";
 import { ColumnsController } from "./columns.controller.js";
 import { ColumnsRepository } from "./columns.repository.js";
 import columnsRoutes from "./columns.routes.js";
@@ -6,7 +8,8 @@ import { ColumnsService } from "./columns.service.js";
 
 const columnsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const repository = new ColumnsRepository(fastify.db);
-  const service = new ColumnsService(repository);
+  const boardAccess = new BoardAccess(new BoardsRepository(fastify.db));
+  const service = new ColumnsService(repository, boardAccess);
   const controller = new ColumnsController(service);
 
   fastify.addHook("onRequest", fastify.authenticate);

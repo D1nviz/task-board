@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import type { FastifyError } from "fastify";
 import fp from "fastify-plugin";
 import { HTTP_STATUS } from "../constants/http.constants.js";
+import { LOG_LEVELS } from "../constants/log.constants.js";
 import {
   AppError,
   BadRequestError,
@@ -46,7 +47,10 @@ const errorHandlerPlugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.setErrorHandler((error, request, reply) => {
     const appError = normalise(error);
     const level =
-      appError.statusCode >= HTTP_STATUS.internalServerError ? "error" : "info";
+      appError.logLevel ??
+      (appError.statusCode >= HTTP_STATUS.internalServerError
+        ? LOG_LEVELS.error
+        : LOG_LEVELS.info);
 
     request.log[level]({ err: error }, appError.code);
     return reply.code(appError.statusCode).send(appError.toResponse());

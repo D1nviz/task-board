@@ -1,11 +1,13 @@
 import type { JWT } from "@fastify/jwt";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type { EnvConfig } from "@/types/fastify.js";
 import {
   AUTH_COOKIE_PATHS,
   AUTH_TOKENS,
   AUTH_TOKENS_TTL,
 } from "./auth.constants.js";
+import { NoRefreshTokenError } from "./auth.errors.js";
 import type {
   AuthChangePasswordBody,
   AuthSignInBody,
@@ -53,6 +55,21 @@ export class AuthController {
     });
   };
 
+  private clearAuthCookiesOnError = async <T>({
+    reply,
+    run,
+  }: {
+    reply: FastifyReply;
+    run: () => Promise<T>;
+  }) => {
+    try {
+      return await run();
+    } catch (error) {
+      this.clearAuthCookies(reply);
+      throw error;
+    }
+  };
+
   signUp = async (
     req: FastifyRequest<{ Body: AuthSignUpBody }>,
     reply: FastifyReply,
@@ -63,7 +80,7 @@ export class AuthController {
 
     this.setAuthCookies(reply, { accessToken, refreshToken });
 
-    return reply.code(201).send(user);
+    return reply.code(HTTP_STATUS.created).send(user);
   };
 
   signIn = async (
@@ -71,10 +88,6 @@ export class AuthController {
     reply: FastifyReply,
   ) => {
     const user = await this.service.signIn(req.body);
-
-    if (!user) {
-      return reply.code(401).send({ message: "Invalid email or password" });
-    }
 
     const accessToken = this.jwt.sign({ id: user.id, role: user.role });
 
@@ -91,42 +104,27 @@ export class AuthController {
     const token = req.cookies[AUTH_TOKENS.refreshToken];
 
     if (!token) {
-      return reply.code(401).send({ message: "No refresh token" });
+      throw new NoRefreshTokenError();
     }
 
-    const result = await this.service.rotateSession({ token });
-
-    if (result.status === "reuse") {
-      req.log.warn(
-        { userId: result.userId, familyId: result.familyId },
-        "refresh token reuse detected, family revoked",
-      );
-    }
-
-    if (result.status !== "ok") {
-      this.clearAuthCookies(reply);
-
-      return reply.code(401).send({
-        message:
-          result.status === "reuse" ? "Token reuse detected" : "Invalid token",
-      });
-    }
-
-    const accessToken = this.jwt.sign({
-      id: result.user.id,
-      role: result.user.role,
+    const { user, refreshToken } = await this.clearAuthCookiesOnError({
+      reply,
+      run: () => this.service.rotateSession({ token }),
     });
+    const accessToken = this.jwt.sign({ id: user.id, role: user.role });
 
-    this.setAuthCookies(reply, {
-      accessToken,
-      refreshToken: result.refreshToken,
-    });
+    this.setAuthCookies(reply, { accessToken, refreshToken });
 
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 
   me = async (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.send(await this.service.me({ userId: req.user.id }));
+    const user = await this.clearAuthCookiesOnError({
+      reply,
+      run: () => this.service.me({ userId: req.user.id }),
+    });
+
+    return reply.send(user);
   };
 
   logout = async (req: FastifyRequest, reply: FastifyReply) => {
@@ -137,22 +135,15 @@ export class AuthController {
     }
 
     this.clearAuthCookies(reply);
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 
   changePassword = async (
     req: FastifyRequest<{ Body: AuthChangePasswordBody }>,
     reply: FastifyReply,
   ) => {
-    const result = await this.service.changePassword({
-      ...req.body,
-      userId: req.user.id,
-    });
+    await this.service.changePassword({ ...req.body, userId: req.user.id });
 
-    if (!result) {
-      return reply.code(401).send({ message: "Invalid current password" });
-    }
-
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 }

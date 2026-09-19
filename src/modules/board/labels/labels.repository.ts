@@ -26,23 +26,11 @@ export class LabelsRepository {
       .from(boards)
       .where(eq(boards.userId, userId));
 
-  findOwnedBoard = ({ boardId, userId }: { boardId: number } & Actor) => {
-    return this.db
-      .select({ id: boards.id })
-      .from(boards)
-      .where(and(eq(boards.id, boardId), eq(boards.userId, userId)));
-  };
-
-  getAllByBoardId = ({ boardId, userId }: LabelGetAllByBoardIdInput) => {
+  getAllByBoardId = ({ boardId }: LabelGetAllByBoardIdInput) => {
     return this.db
       .select(columns)
       .from(labels)
-      .where(
-        and(
-          eq(labels.boardId, boardId),
-          inArray(labels.boardId, this.ownedBoardIds({ userId })),
-        ),
-      );
+      .where(eq(labels.boardId, boardId));
   };
 
   getById = ({ id, userId }: LabelGetByIdInput) => {

@@ -1,11 +1,17 @@
 import { HTTP_STATUS } from "../constants/http.constants.js";
+import type { LogLevel } from "../constants/log.constants.js";
 import { ERROR_CODES } from "./error-codes.js";
 
+/**
+ * `details` is returned to the client. `context` is only logged.
+ */
 type AppErrorInput = {
   statusCode: number;
   code: string;
   message: string;
   details?: unknown;
+  context?: unknown;
+  logLevel?: LogLevel;
   cause?: unknown;
 };
 
@@ -13,6 +19,8 @@ type HttpErrorInput = {
   message: string;
   code?: string;
   details?: unknown;
+  context?: unknown;
+  logLevel?: LogLevel;
   cause?: unknown;
 };
 
@@ -20,13 +28,25 @@ export class AppError extends Error {
   readonly statusCode;
   readonly code;
   readonly details;
+  readonly context;
+  readonly logLevel;
 
-  constructor({ statusCode, code, message, details, cause }: AppErrorInput) {
+  constructor({
+    statusCode,
+    code,
+    message,
+    details,
+    context,
+    logLevel,
+    cause,
+  }: AppErrorInput) {
     super(message, { cause });
     this.name = new.target.name;
     this.statusCode = statusCode;
     this.code = code;
     this.details = details;
+    this.context = context;
+    this.logLevel = logLevel;
   }
 
   toResponse() {

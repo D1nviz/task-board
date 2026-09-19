@@ -1,3 +1,5 @@
+import type { BoardAccess } from "../boards/board-access.js";
+import { ColumnNotFoundError } from "./columns.errors.js";
 import type { ColumnsRepository } from "./columns.repository.js";
 import type {
   ColumnCreateInput,
@@ -8,39 +10,48 @@ import type {
 } from "./columns.schema.js";
 
 export class ColumnsService {
-  constructor(private repository: ColumnsRepository) {}
+  constructor(
+    private repository: ColumnsRepository,
+    private boardAccess: BoardAccess,
+  ) {}
 
-  getAllByBoardId = (params: ColumnGetAllByBoardIdInput) => {
+  getAllByBoardId = async (params: ColumnGetAllByBoardIdInput) => {
+    await this.boardAccess.assertOwned(params);
     return this.repository.getAllByBoardId(params);
   };
 
-  getById = (params: ColumnGetByIdInput) => {
-    return this.repository.getById(params);
+  getById = async (params: ColumnGetByIdInput) => {
+    const [column] = await this.repository.getById(params);
+
+    if (!column) {
+      throw new ColumnNotFoundError({ columnId: params.id });
+    }
+
+    return column;
   };
 
   create = async ({ userId, ...data }: ColumnCreateInput) => {
-    const [board] = await this.repository.findOwnedBoard({
-      boardId: data.boardId,
-      userId,
-    });
+    await this.boardAccess.assertOwned({ boardId: data.boardId, userId });
 
-    if (!board) {
-      console.log("create column: board not owned", { userId, ...data });
-      return [];
-    }
-
-    return this.repository.create(data);
+    const [column] = await this.repository.create(data);
+    return column;
   };
 
   update = async (params: ColumnUpdateInput) => {
-    const rows = await this.repository.update(params);
-    console.log("updated column:", rows);
-    return rows;
+    const [column] = await this.repository.update(params);
+
+    if (!column) {
+      throw new ColumnNotFoundError({ columnId: params.id });
+    }
+
+    return column;
   };
 
   delete = async (params: ColumnDeleteInput) => {
-    const rows = await this.repository.delete(params);
-    console.log("deleted column:", rows);
-    return rows;
+    const [column] = await this.repository.delete(params);
+
+    if (!column) {
+      throw new ColumnNotFoundError({ columnId: params.id });
+    }
   };
 }

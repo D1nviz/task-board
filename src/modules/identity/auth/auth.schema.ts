@@ -1,9 +1,6 @@
 import Type from "typebox";
 import type { Actor } from "@/core/types/actor.js";
-import {
-  UserCreateBodySchema,
-  type UserPublic,
-} from "../users/users.schema.js";
+import { UserCreateBodySchema } from "../users/users.schema.js";
 import type { credentials, refreshTokens } from "./auth.table.js";
 
 export const AuthSignUpBodySchema = Type.Object(
@@ -61,14 +58,6 @@ export type AuthRevokeSessionInput = { token: string };
 export type AuthRefreshTokenMarkUsedInput = Pick<RefreshToken, "id">;
 export type AuthRotateSessionInput = { token: string };
 
-export type AuthRotateSessionResult =
-  | { status: "invalid" }
-  | {
-      status: "reuse";
-      userId: RefreshToken["userId"];
-      familyId: RefreshToken["familyId"];
-    }
-  | { status: "ok"; user: UserPublic; refreshToken: string };
 export type AuthIssueRefreshTokenInput = Actor & {
   familyId?: RefreshToken["familyId"];
 };

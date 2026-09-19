@@ -1,3 +1,4 @@
+import { BoardNotFoundError } from "./boards.errors.js";
 import type { BoardsRepository } from "./boards.repository.js";
 import type {
   BoardCreateInput,
@@ -10,27 +11,40 @@ import type {
 export class BoardsService {
   constructor(private repository: BoardsRepository) {}
 
-  getAll(params: BoardGetAllInput) {
+  getAll = (params: BoardGetAllInput) => {
     return this.repository.getAll(params);
-  }
+  };
 
-  getById(params: BoardGetByIdInput) {
-    return this.repository.getById(params);
-  }
+  getById = async (params: BoardGetByIdInput) => {
+    const [board] = await this.repository.getById(params);
 
-  create(data: BoardCreateInput) {
-    return this.repository.create(data);
-  }
+    if (!board) {
+      throw new BoardNotFoundError({ boardId: params.id });
+    }
 
-  async update(params: BoardUpdateInput) {
-    const rows = await this.repository.update(params);
-    console.log("updated board:", rows);
-    return rows;
-  }
+    return board;
+  };
 
-  async delete(params: BoardDeleteInput) {
-    const rows = await this.repository.delete(params);
-    console.log("deleted board:", rows);
-    return rows;
-  }
+  create = async (data: BoardCreateInput) => {
+    const [board] = await this.repository.create(data);
+    return board;
+  };
+
+  update = async (params: BoardUpdateInput) => {
+    const [board] = await this.repository.update(params);
+
+    if (!board) {
+      throw new BoardNotFoundError({ boardId: params.id });
+    }
+
+    return board;
+  };
+
+  delete = async (params: BoardDeleteInput) => {
+    const [board] = await this.repository.delete(params);
+
+    if (!board) {
+      throw new BoardNotFoundError({ boardId: params.id });
+    }
+  };
 }

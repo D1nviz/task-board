@@ -1,3 +1,6 @@
+import { isUniqueViolation } from "@/core/db/errors.js";
+import type { BoardAccess } from "../boards/board-access.js";
+import { LabelNameTakenError, LabelNotFoundError } from "./labels.errors.js";
 import type { LabelsRepository } from "./labels.repository.js";
 import type {
   LabelCreateInput,
@@ -6,41 +9,69 @@ import type {
   LabelGetByIdInput,
   LabelUpdateInput,
 } from "./labels.schema.js";
+import { LABELS_CONSTRAINTS } from "./labels.table.js";
 
 export class LabelsService {
-  constructor(private repository: LabelsRepository) {}
+  constructor(
+    private repository: LabelsRepository,
+    private boardAccess: BoardAccess,
+  ) {}
 
-  getAllByBoardId = (params: LabelGetAllByBoardIdInput) => {
+  private isNameTaken = (error: unknown) =>
+    isUniqueViolation({
+      error,
+      constraint: LABELS_CONSTRAINTS.boardIdNameUnique,
+    });
+
+  getAllByBoardId = async (params: LabelGetAllByBoardIdInput) => {
+    await this.boardAccess.assertOwned(params);
     return this.repository.getAllByBoardId(params);
   };
 
-  getById = (params: LabelGetByIdInput) => {
-    return this.repository.getById(params);
+  getById = async (params: LabelGetByIdInput) => {
+    const [label] = await this.repository.getById(params);
+
+    if (!label) {
+      throw new LabelNotFoundError({ labelId: params.id });
+    }
+
+    return label;
   };
 
   create = async ({ userId, ...data }: LabelCreateInput) => {
-    const [board] = await this.repository.findOwnedBoard({
-      boardId: data.boardId,
-      userId,
-    });
+    await this.boardAccess.assertOwned({ boardId: data.boardId, userId });
 
-    if (!board) {
-      console.log("create label: board not owned", { userId, ...data });
-      return [];
+    try {
+      const [label] = await this.repository.create(data);
+      return label;
+    } catch (error) {
+      throw this.isNameTaken(error)
+        ? new LabelNameTakenError({ name: data.name })
+        : error;
     }
-
-    return this.repository.create(data);
   };
 
   update = async (params: LabelUpdateInput) => {
-    const rows = await this.repository.update(params);
-    console.log("updated label:", rows);
-    return rows;
+    try {
+      const [label] = await this.repository.update(params);
+
+      if (!label) {
+        throw new LabelNotFoundError({ labelId: params.id });
+      }
+
+      return label;
+    } catch (error) {
+      throw this.isNameTaken(error)
+        ? new LabelNameTakenError({ name: params.name })
+        : error;
+    }
   };
 
   delete = async (params: LabelDeleteInput) => {
-    const rows = await this.repository.delete(params);
-    console.log("deleted label:", rows);
-    return rows;
+    const [label] = await this.repository.delete(params);
+
+    if (!label) {
+      throw new LabelNotFoundError({ labelId: params.id });
+    }
   };
 }

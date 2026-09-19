@@ -1,3 +1,4 @@
+import { NoteNotFoundError } from "./notes.errors.js";
 import type { NotesRepository } from "./notes.repository.js";
 import type {
   NoteCreateInput,
@@ -14,23 +15,36 @@ export class NotesService {
     return this.repository.getAll(params);
   };
 
-  getById = (params: NoteGetByIdInput) => {
-    return this.repository.getById(params);
+  getById = async (params: NoteGetByIdInput) => {
+    const [note] = await this.repository.getById(params);
+
+    if (!note) {
+      throw new NoteNotFoundError({ noteId: params.id });
+    }
+
+    return note;
   };
 
-  create = (data: NoteCreateInput) => {
-    return this.repository.create(data);
+  create = async (data: NoteCreateInput) => {
+    const [note] = await this.repository.create(data);
+    return note;
   };
 
   update = async (params: NoteUpdateInput) => {
-    const rows = await this.repository.update(params);
-    console.log("updated note:", rows);
-    return rows;
+    const [note] = await this.repository.update(params);
+
+    if (!note) {
+      throw new NoteNotFoundError({ noteId: params.id });
+    }
+
+    return note;
   };
 
   delete = async (params: NoteDeleteInput) => {
-    const rows = await this.repository.delete(params);
-    console.log("deleted note:", rows);
-    return rows;
+    const [note] = await this.repository.delete(params);
+
+    if (!note) {
+      throw new NoteNotFoundError({ noteId: params.id });
+    }
   };
 }

@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type {
   BoardCreateBody,
   BoardIdParams,
@@ -9,45 +10,42 @@ import type { BoardsService } from "./boards.sevice.js";
 export class BoardsController {
   constructor(private service: BoardsService) {}
 
+  getAll = async (req: FastifyRequest, reply: FastifyReply) => {
+    return reply.send(await this.service.getAll({ userId: req.user.id }));
+  };
+
   getById = async (
     req: FastifyRequest<{ Params: BoardIdParams }>,
     reply: FastifyReply,
   ) => {
-    const [board] = await this.service.getById({
-      ...req.params,
-      userId: req.user.id,
-    });
-
-    return reply.send(board);
+    return reply.send(
+      await this.service.getById({ ...req.params, userId: req.user.id }),
+    );
   };
 
   create = async (
     req: FastifyRequest<{ Body: BoardCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const [board] = await this.service.create({
+    const board = await this.service.create({
       ...req.body,
       userId: req.user.id,
     });
 
-    return reply.code(201).send(board);
-  };
-
-  getAll = async (req: FastifyRequest, reply: FastifyReply) => {
-    return reply.send(await this.service.getAll({ userId: req.user.id }));
+    return reply.code(HTTP_STATUS.created).send(board);
   };
 
   update = async (
     req: FastifyRequest<{ Params: BoardIdParams; Body: BoardUpdateBody }>,
     reply: FastifyReply,
   ) => {
-    const [row] = await this.service.update({
-      ...req.params,
-      ...req.body,
-      userId: req.user.id,
-    });
-
-    return reply.send(row);
+    return reply.send(
+      await this.service.update({
+        ...req.params,
+        ...req.body,
+        userId: req.user.id,
+      }),
+    );
   };
 
   delete = async (
@@ -55,6 +53,6 @@ export class BoardsController {
     reply: FastifyReply,
   ) => {
     await this.service.delete({ ...req.params, userId: req.user.id });
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 }

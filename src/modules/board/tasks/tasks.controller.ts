@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type {
   TaskByBoardIdParams,
   TaskByColumnIdParams,
@@ -49,24 +50,25 @@ export class TasksController {
     req: FastifyRequest<{ Body: TaskCreateBody }>,
     reply: FastifyReply,
   ) => {
-    const [task] = await this.service.create({
+    const task = await this.service.create({
       ...req.body,
       userId: req.user.id,
     });
-    return reply.code(201).send(task);
+
+    return reply.code(HTTP_STATUS.created).send(task);
   };
 
   update = async (
     req: FastifyRequest<{ Params: TaskIdParams; Body: TaskUpdateBody }>,
     reply: FastifyReply,
   ) => {
-    const [row] = await this.service.update({
-      ...req.params,
-      ...req.body,
-      userId: req.user.id,
-    });
-
-    return reply.send(row);
+    return reply.send(
+      await this.service.update({
+        ...req.params,
+        ...req.body,
+        userId: req.user.id,
+      }),
+    );
   };
 
   delete = async (
@@ -74,7 +76,7 @@ export class TasksController {
     reply: FastifyReply,
   ) => {
     await this.service.delete({ ...req.params, userId: req.user.id });
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 
   attachLabel = async (
@@ -82,7 +84,7 @@ export class TasksController {
     reply: FastifyReply,
   ) => {
     await this.service.attachLabel({ ...req.params, userId: req.user.id });
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 
   detachLabel = async (
@@ -90,6 +92,6 @@ export class TasksController {
     reply: FastifyReply,
   ) => {
     await this.service.detachLabel({ ...req.params, userId: req.user.id });
-    return reply.code(204).send();
+    return reply.code(HTTP_STATUS.noContent).send();
   };
 }

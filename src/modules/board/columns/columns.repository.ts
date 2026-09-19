@@ -27,23 +27,11 @@ export class ColumnsRepository {
       .from(boards)
       .where(eq(boards.userId, userId));
 
-  findOwnedBoard = ({ boardId, userId }: { boardId: number } & Actor) => {
-    return this.db
-      .select({ id: boards.id })
-      .from(boards)
-      .where(and(eq(boards.id, boardId), eq(boards.userId, userId)));
-  };
-
-  getAllByBoardId = ({ boardId, userId }: ColumnGetAllByBoardIdInput) => {
+  getAllByBoardId = ({ boardId }: ColumnGetAllByBoardIdInput) => {
     return this.db
       .select(columns)
       .from(boardColumns)
-      .where(
-        and(
-          eq(boardColumns.boardId, boardId),
-          inArray(boardColumns.boardId, this.ownedBoardIds({ userId })),
-        ),
-      )
+      .where(eq(boardColumns.boardId, boardId))
       .orderBy(asc(boardColumns.sortOrder), asc(boardColumns.id));
   };
 
