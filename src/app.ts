@@ -7,6 +7,7 @@ import cookiePlugin from "./core/plugins/cookie.js";
 import corsPlugin from "./core/plugins/cors.js";
 import dbPlugin from "./core/plugins/db.plugin.js";
 import envPlugin from "./core/plugins/env.js";
+import errorHandlerPlugin from "./core/plugins/error-handler.js";
 import jwtPlugin from "./core/plugins/jwt.js";
 import swaggerPlugin from "./core/plugins/swagger.js";
 export function buildApp() {
@@ -16,6 +17,7 @@ export function buildApp() {
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   app.register(envPlugin);
+  app.register(errorHandlerPlugin);
   app.register(corsPlugin);
   app.register(dbPlugin);
   app.register(swaggerPlugin);
