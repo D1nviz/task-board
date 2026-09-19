@@ -114,15 +114,10 @@ Requirements: Node.js 24 or newer, Docker.
      postgres:17-alpine
    ```
 
-2. Create `.env` in the project root:
+2. Create `.env` from the example and set `JWT_SECRET`:
 
-   ```dotenv
-   NODE_ENV=development
-   HOST=0.0.0.0
-   PORT=8080
-   DATABASE_URL=postgresql://taskboard:taskboard@localhost:5433/task_board
-   JWT_SECRET=change-me
-   # CORS_ORIGIN=http://localhost:3000,http://localhost:5173
+   ```sh
+   cp .env.example .env
    ```
 
    `HOST`, `PORT` and `NODE_ENV` have defaults, the rest is required. The app refuses to start and names the offending variable otherwise.
