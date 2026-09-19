@@ -4,7 +4,7 @@ import { API_PREFIX } from "./core/constants/api.constants.js";
 import autoloadPlugin from "./core/plugins/autoload.js";
 import cookiePlugin from "./core/plugins/cookie.js";
 import corsPlugin from "./core/plugins/cors.js";
-import dbPlugin from "./core/plugins/db.plugin.js";
+import dbPlugin from "./core/plugins/db.js";
 import envPlugin from "./core/plugins/env.js";
 import errorHandlerPlugin from "./core/plugins/error-handler.js";
 import jwtPlugin from "./core/plugins/jwt.js";
