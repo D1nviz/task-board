@@ -61,6 +61,8 @@ throw isUniqueViolation({ error, constraint: USERS_CONSTRAINTS.emailUnique })
 
 **Auth done properly.** Sign-in issues a 15 minute JWT access token and a 7 day refresh token, both httpOnly cookies with scoped paths. Refresh rotates the token; presenting an already used token revokes the whole token family and logs a warning. Expired tokens are purged hourly by a job that starts with the app. Deleting a user invalidates their live session with a `401` that also clears the cookies.
 
+**Health means the database answers.** `GET /api/health` runs `select 1` and returns `200 { status: "ok", database: "up" }`, or `503 { status: "degraded", database: "down" }` when it does not, so an orchestrator restarts the right thing.
+
 **Configuration is a schema.** `src/core/plugins/env.ts` describes the environment with TypeBox, applies defaults, converts `PORT` to a number and refuses to start with a readable list of what is wrong. The `EnvConfig` type is derived from the schema, there is no hand-written duplicate.
 
 **OpenAPI without repetition.** One `onRoute` hook per module adds the tag, the cookie security scheme and the shared `400` and `401` responses. Routes only declare what is specific to them: summaries, success schemas, `404` and `409`. Protected routes are detected from their `onRequest` hooks, so the auth module marks `me`, `logout` and `change-password` as secured without any extra declaration. Because every route has response schemas, responses are serialised through them and internal columns never leak.
@@ -160,5 +162,4 @@ The development database is never touched.
 
 - CI workflow: typecheck, lint and tests on every push
 - Rate limiting on the auth routes, keyed by IP and email
-- Health check that verifies the database connection
 - Proper TLS verification for the production database connection

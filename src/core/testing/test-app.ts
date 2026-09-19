@@ -12,7 +12,6 @@ export const api = (path: string) => `${API_PREFIX}${path}`;
 
 type App = ReturnType<typeof buildApp>;
 
-/** Builds the app against the test database. `configure` runs before `ready`. */
 export const createTestApp = async ({
   configure,
 }: {

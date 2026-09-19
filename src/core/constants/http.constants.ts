@@ -9,4 +9,5 @@ export const HTTP_STATUS = {
   conflict: 409,
   unprocessableEntity: 422,
   internalServerError: 500,
+  serviceUnavailable: 503,
 } as const;

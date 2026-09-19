@@ -1,21 +1,19 @@
-import {
-  type FastifyPluginAsyncTypebox,
-  Type,
-} from "@fastify/type-provider-typebox";
+import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import { HTTP_STATUS } from "@/core/constants/http.constants.js";
-import { HealthController } from "./health.controller.js";
+import { HealthResponseSchema } from "./health.schema.js";
 
 const healthRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
-  const controller = new HealthController();
+  const { healthController } = fastify;
 
   fastify.get("/", {
     schema: {
-      summary: "Liveness probe",
+      summary: "Readiness probe, verifies the database connection",
       response: {
-        [HTTP_STATUS.ok]: Type.Object({ status: Type.String() }),
+        [HTTP_STATUS.ok]: HealthResponseSchema,
+        [HTTP_STATUS.serviceUnavailable]: HealthResponseSchema,
       },
     },
-    handler: controller.checkHealth,
+    handler: healthController.check,
   });
 };
 
