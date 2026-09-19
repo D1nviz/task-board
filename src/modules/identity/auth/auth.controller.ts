@@ -1,5 +1,6 @@
 import type { JWT } from "@fastify/jwt";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { NODE_ENVS } from "@/core/constants/env.constants.js";
 import { HTTP_STATUS } from "@/core/constants/http.constants.js";
 import type { EnvConfig } from "@/types/fastify.js";
 import {
@@ -27,7 +28,7 @@ export class AuthController {
     reply: FastifyReply,
     { accessToken, refreshToken }: AuthTokenPair,
   ) => {
-    const secure = this.config.NODE_ENV === "production";
+    const secure = this.config.NODE_ENV === NODE_ENVS.production;
 
     reply.setCookie(AUTH_TOKENS.accessToken, accessToken, {
       httpOnly: true,

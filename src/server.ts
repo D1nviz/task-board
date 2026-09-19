@@ -1,5 +1,11 @@
 import { buildApp } from "./app.js";
 
+try {
+  process.loadEnvFile();
+} catch {
+  // no .env file, rely on process environment
+}
+
 const app = buildApp();
 
 async function start() {
@@ -8,7 +14,7 @@ async function start() {
 
     await app.listen({
       port: app.config.PORT,
-      host: "0.0.0.0",
+      host: app.config.HOST,
     });
   } catch (err) {
     app.log.error(err);
