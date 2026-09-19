@@ -14,3 +14,5 @@ export const AUTH_COOKIE_PATHS = {
   [AUTH_TOKENS.accessToken]: "/",
   [AUTH_TOKENS.refreshToken]: `${API_PREFIX}/auth/refresh`,
 } as const;
+
+export const AUTH_REFRESH_TOKEN_CLEANUP_INTERVAL_MS = 60 * 60 * 1000; // 1 hour

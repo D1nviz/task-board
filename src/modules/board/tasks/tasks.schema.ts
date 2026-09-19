@@ -1,5 +1,32 @@
 import { Type } from "typebox";
 import type { WithActor } from "@/core/types/actor.js";
+import { priorityEnum } from "./tasks.table.js";
+
+export const TaskResponseSchema = Type.Object({
+  id: Type.Number(),
+  title: Type.String(),
+  description: Type.Union([Type.String(), Type.Null()]),
+  boardId: Type.Number(),
+  boardColumnId: Type.Union([Type.Number(), Type.Null()]),
+  priority: Type.Enum(priorityEnum.enumValues),
+  sortOrder: Type.Number(),
+  createdAt: Type.String({ format: "date-time" }),
+  updatedAt: Type.String({ format: "date-time" }),
+});
+
+export const TaskDetailsResponseSchema = Type.Object({
+  ...TaskResponseSchema.properties,
+  labels: Type.Array(Type.Object({ id: Type.Number(), name: Type.String() })),
+  boardColumn: Type.Union([
+    Type.Object({
+      id: Type.Number(),
+      title: Type.String(),
+      sortOrder: Type.Number(),
+    }),
+    Type.Null(),
+  ]),
+  board: Type.Object({ id: Type.Number() }),
+});
 
 export const TaskByBoardIdParamsSchema = Type.Object({
   boardId: Type.Integer({ minimum: 1 }),
@@ -13,7 +40,7 @@ export const TaskUpdateBodySchema = Type.Object(
   {
     title: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
     description: Type.Optional(Type.String({ maxLength: 5000 })),
-    priority: Type.Optional(Type.Enum(["low", "medium", "high"])),
+    priority: Type.Optional(Type.Enum(priorityEnum.enumValues)),
     boardColumnId: Type.Optional(Type.Integer({ minimum: 1 })),
     sortOrder: Type.Optional(Type.Integer({ minimum: 0 })),
   },
@@ -45,6 +72,8 @@ export const TaskCreateBodySchema = Type.Object(
   },
 );
 
+export type TaskResponse = Type.Static<typeof TaskResponseSchema>;
+export type TaskDetailsResponse = Type.Static<typeof TaskDetailsResponseSchema>;
 export type TaskByBoardIdParams = Type.Static<typeof TaskByBoardIdParamsSchema>;
 export type TaskByColumnIdParams = Type.Static<
   typeof TaskByColumnIdParamsSchema

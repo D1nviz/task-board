@@ -48,7 +48,8 @@ export class AuthRepository {
   deleteExpired = () => {
     return this.db
       .delete(refreshTokens)
-      .where(lt(refreshTokens.expiresAt, new Date()));
+      .where(lt(refreshTokens.expiresAt, new Date()))
+      .returning({ id: refreshTokens.id });
   };
 
   findRefreshToken = ({ tokenHash }: AuthRefreshTokenFindInput) => {

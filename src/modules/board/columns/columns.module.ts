@@ -1,4 +1,6 @@
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { DOCS_TAGS } from "@/core/constants/docs.constants.js";
+import { documentRoutes } from "@/core/docs/document-routes.js";
 import { BoardAccess } from "../boards/board-access.js";
 import { BoardsRepository } from "../boards/boards.repository.js";
 import { ColumnsController } from "./columns.controller.js";
@@ -13,6 +15,7 @@ const columnsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const controller = new ColumnsController(service);
 
   fastify.addHook("onRequest", fastify.authenticate);
+  documentRoutes({ fastify, tag: DOCS_TAGS.columns, secured: true });
 
   fastify.decorate("columnsController", controller);
   await fastify.register(columnsRoutes, { prefix: "/columns" });

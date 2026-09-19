@@ -1,12 +1,14 @@
 {
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "start": "node dist/server.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "lint": "biome check .",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "test": "node --env-file-if-exists=.env --import tsx --test-global-setup=src/core/testing/global-setup.ts --test 'src/**/tests/*.test.ts'",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "type": "module",
   "dependencies": {

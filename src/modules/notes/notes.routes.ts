@@ -2,6 +2,8 @@ import {
   type FastifyPluginAsyncTypebox,
   Type,
 } from "@fastify/type-provider-typebox";
+import { HTTP_STATUS } from "@/core/constants/http.constants.js";
+import { ErrorResponseSchema } from "@/core/errors/index.js";
 import {
   NoteCreateBodySchema,
   NoteIdParamsSchema,
@@ -14,8 +16,9 @@ const notesRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get("/", {
     schema: {
+      summary: "List notes of the current user",
       response: {
-        200: Type.Array(NoteResponseSchema),
+        [HTTP_STATUS.ok]: Type.Array(NoteResponseSchema),
       },
     },
     handler: notesController.getAll,
@@ -23,16 +26,22 @@ const notesRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.get("/:id", {
     schema: {
+      summary: "Get a note",
       params: NoteIdParamsSchema,
+      response: {
+        [HTTP_STATUS.ok]: NoteResponseSchema,
+        [HTTP_STATUS.notFound]: ErrorResponseSchema,
+      },
     },
     handler: notesController.getById,
   });
 
   fastify.post("/", {
     schema: {
+      summary: "Create a note",
       body: NoteCreateBodySchema,
       response: {
-        201: NoteResponseSchema,
+        [HTTP_STATUS.created]: NoteResponseSchema,
       },
     },
     handler: notesController.create,
@@ -40,15 +49,25 @@ const notesRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.patch("/:id", {
     schema: {
+      summary: "Update a note",
       params: NoteIdParamsSchema,
       body: NoteUpdateBodySchema,
+      response: {
+        [HTTP_STATUS.ok]: NoteResponseSchema,
+        [HTTP_STATUS.notFound]: ErrorResponseSchema,
+      },
     },
     handler: notesController.update,
   });
 
   fastify.delete("/:id", {
     schema: {
+      summary: "Delete a note",
       params: NoteIdParamsSchema,
+      response: {
+        [HTTP_STATUS.noContent]: Type.Null(),
+        [HTTP_STATUS.notFound]: ErrorResponseSchema,
+      },
     },
     handler: notesController.delete,
   });

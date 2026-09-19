@@ -1,4 +1,6 @@
 import type { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { DOCS_TAGS } from "@/core/constants/docs.constants.js";
+import { documentRoutes } from "@/core/docs/document-routes.js";
 import { BoardAccess } from "../boards/board-access.js";
 import { BoardsRepository } from "../boards/boards.repository.js";
 import { LabelsController } from "./labels.controller.js";
@@ -13,6 +15,7 @@ const labelsModule: FastifyPluginAsyncTypebox = async (fastify) => {
   const controller = new LabelsController(service);
 
   fastify.addHook("onRequest", fastify.authenticate);
+  documentRoutes({ fastify, tag: DOCS_TAGS.labels, secured: true });
 
   fastify.decorate("labelsController", controller);
   await fastify.register(labelsRoutes, { prefix: "/labels" });

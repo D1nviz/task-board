@@ -9,9 +9,9 @@ import envPlugin from "./core/plugins/env.js";
 import errorHandlerPlugin from "./core/plugins/error-handler.js";
 import jwtPlugin from "./core/plugins/jwt.js";
 import swaggerPlugin from "./core/plugins/swagger.js";
-export function buildApp() {
+export function buildApp({ logger = true }: { logger?: boolean } = {}) {
   const app = Fastify({
-    logger: { transport: { target: "pino-pretty" } },
+    logger: logger ? { transport: { target: "pino-pretty" } } : false,
     ajv: { customOptions: { removeAdditional: false } },
   }).withTypeProvider<TypeBoxTypeProvider>();
 

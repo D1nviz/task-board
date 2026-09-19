@@ -52,6 +52,11 @@ export class AuthService {
     return { refreshToken, familyId };
   };
 
+  purgeExpiredSessions = async () => {
+    const deleted = await this.repository.deleteExpired();
+    return deleted.length;
+  };
+
   revokeSession = async ({ token }: AuthRevokeSessionInput) => {
     const stored = await this.repository.findRefreshToken({
       tokenHash: this.hashToken(token),
