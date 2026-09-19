@@ -1,7 +1,6 @@
 import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Fastify from "fastify";
 import { API_PREFIX } from "./core/constants/api.constants.js";
-import healthModule from "./core/health/health.module.js";
 import autoloadPlugin from "./core/plugins/autoload.js";
 import cookiePlugin from "./core/plugins/cookie.js";
 import corsPlugin from "./core/plugins/cors.js";
@@ -23,7 +22,6 @@ export function buildApp() {
   app.register(swaggerPlugin);
   app.register(cookiePlugin);
   app.register(jwtPlugin);
-  app.register(healthModule);
   app.register(autoloadPlugin, { prefix: API_PREFIX });
 
   return app;
